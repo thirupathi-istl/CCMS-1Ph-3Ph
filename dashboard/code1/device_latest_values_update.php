@@ -131,12 +131,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
    
     if ($update_data) {
-     	$kw_total_calc= $kw_total*1000;
-        if ($lights_wattage > 0 && $kw_total_calc > 100 && $total_lights > 0) {
+        if ($lights_wattage > 0 && $kw_total > 100 && $total_lights > 0) {
             $on_lights = 0;
             $off_lights = 0;
 
-            $load = $kw_total_calc;
+            $load = $kw_total;
             $on_lights = ($load / $lights_wattage) * 100;
 
             $off_lights = round((100 - $on_lights), 2);
