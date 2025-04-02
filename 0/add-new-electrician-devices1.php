@@ -55,7 +55,10 @@ $permission_check = 0;
                                             <input type="text" class="form-control" id="Electrician-name" name="Electrician-name" placeholder="Enter Electrician Name" required>
 
                                             <label for="Electrician-phone" class="form-label mt-2">Phone Number</label>
-                                            <input type="tel" class="form-control" id="Electrician-phone" name="Electrician-phone" placeholder="Enter Phone Number" pattern="[0-9]{10}" maxlength="10" required>
+                                            <input type="text" class="form-control" id="Electrician-phone" name="Electrician-phone"
+                                                placeholder="Enter Phone Number" maxlength="10" required
+                                                oninput="validatePhoneNumber(this)">
+
                                         </div>
                                         <div class="mb-2 ms-2">
                                             <div class="col-sm-12">

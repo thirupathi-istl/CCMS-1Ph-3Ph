@@ -1,4 +1,3 @@
-
 <?php
 require_once '../../base-path/config-path.php';
 require_once BASE_PATH_1 . 'config_db/config.php';
@@ -10,12 +9,11 @@ $mobile_no = $sessionVars['mobile_no'];
 $user_id = $sessionVars['user_id'];
 $role = $sessionVars['role'];
 $user_login_id = $sessionVars['user_login_id'];
-//==================================//
+
 $return_response = "";
 $user_devices = "";
 $device_list = array();
 $total_switch_point = 0;
-//==================================//
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
     $group_id = $_POST['GROUP_ID'];
@@ -47,8 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
                     $device_id_name = $rl['device_id_name'];
                     $update = $rl['update'];
                     $date_time = $rl['date_time'];
-                    $condition = $rl['condition'];
-
+                    
                     $sql_electrician = "SELECT electrician_name, phone_number FROM $users_db.`electrician_devices` WHERE device_id = '$device_id' LIMIT 1";
                     $electrician_result = mysqli_query($conn, $sql_electrician);
                     $electrician_name = '';
@@ -65,15 +62,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
                                 <i class="bi bi-cpu"></i>
                                 ' . $device_id_name . '
                             </span>
-                           
                         </div>
                         <div class="mb-1 font-small text-info-emphasis">' . $update . '</div>
-                        <div class="d-flex justify-content-end">  <span class="timestamp">
+                        <div class="d-flex justify-content-end">
+                            <span class="timestamp">
                                 <i class="bi bi-clock"></i>
                                 ' . $date_time . '
                             </span>
-                            </div>
-                        <div class="contact-info">
+                        </div>';
+
+                    if (!empty($electrician_name) && !empty($phone_number)) {
+                        $return_response .= '<div class="contact-info">
                             <span class="electrician-info">
                                 <i class="bi bi-person"></i>
                                 ' . $electrician_name . '
@@ -82,8 +81,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
                                 <i class="bi bi-telephone"></i>
                                 ' . $phone_number . '
                             </a>
-                        </div>
-                    </div>';
+                        </div>';
+                    }
+
+                    $return_response .= '</div>'; // Closing alert-item div
                 }
             }
             mysqli_free_result($result);
