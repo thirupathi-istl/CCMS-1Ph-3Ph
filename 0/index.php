@@ -2,262 +2,357 @@
 require_once 'config-path.php';
 require_once '../session/session-manager.php';
 SessionManager::checkSession();
-$sessionVars = SessionManager::SessionVariables();
-$role = $sessionVars['role'];
 ?>
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
+<html lang="en">
+
 <head>
-  <title>Dashboard</title>    
-  <?php
-  include(BASE_PATH."assets/html/start-page.php");  
-  ?>
-  <div class="d-flex flex-column flex-shrink-0 p-3 main-content">
-    <div class="container-fluid">
-      <div class="row d-flex align-items-center">
-        <div class="col-12 p-0">
-          <p class="m-0 p-0"><span class="text-body-tertiary">Pages / </span><span>Dashboard</span></p>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Dashboard</title>
+<!-- Bootstrap CSS -->
+<!-- Bootstrap JavaScript -->
+
+    <style>
+        /* Custom styles to complement Bootstrap */
+
+
+        .chart-container {
+            height: 120px;
+            position: relative;
+        }
+
+        .updates-container {
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .device-name {
+            color: #2563eb;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timestamp {
+            color: #6b7280;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .alert-message {
+            color: #374151;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 8px;
+            flex-wrap: wrap;
+            /* Allow wrapping for small screens */
+        }
+
+        .electrician-info,
+        .phone-number {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #059669;
+            font-size: 0.85rem;
+            text-decoration: none;
+            white-space: nowrap;
+            /* Prevent breaking in larger screens */
+        }
+
+
+        .phone-number:hover {
+            text-decoration: underline;
+        }
+
+        .bi {
+            font-size: 1rem;
+        }
+
+        @media (max-width: 576px) {
+            .contact-info {
+                flex-direction: column;
+                /* Stack name and phone number */
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .electrician-info {
+                font-size: 0.8rem;
+                /* Increase size for readability */
+                font-weight: bold;
+            }
+
+            .phone-number {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* .update-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+        } */
+
+        /* .update-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .update-content {
+            flex: 1;
+        }
+
+        .update-message {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .update-timestamp {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .update-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+        }
+
+        .update-info {
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+
+        .update-success {
+            background-color: rgba(25, 135, 84, 0.1);
+        } */
+
+        /* Make sure cards have consistent height */
+        /* .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        } */
+
+        /* Responsive adjustments */
+        /* @media (min-width: 992px) {
+            .col-lg-4 {
+                order: 4;
+            }
+        } */
+
+        .map-container {
+            height: 300px;
+            background-color: #f1f5f9;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <title>Device Dashboard</title>
+    <?php
+    include(BASE_PATH . "assets/html/start-page.php");
+    ?>
+    <div class="d-flex flex-column flex-shrink-0 p-3 main-content">
+        <div class="container-fluid">
+            <div class="row d-flex align-items-center">
+                <div class="col-12 p-0">
+                    <p class="m-0 p-0"><span class="text-body-tertiary">Pages / </span><span>Device Dashboard</span></p>
+                </div>
+            </div>
+
+            <?php include(BASE_PATH . "dropdown-selection/device-list.php"); ?>
+
+            <div class="container-fluid py-4">
+                <div class="row">
+                    <!-- Left Section (Cards + Map) -->
+                    <div class="col-lg-8">
+                        <div class="row g-3">
+                            <!-- Lights Card -->
+                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Lights</h5>
+                                    </div>
+                                    <div class="card-body d-flex flex-column pointer">
+                                        <div class="text-center mb-3">
+                                            <h2 id="total-lights">1250</h2>
+                                            <p class="text-muted mb-3">Total Lights Installed</p>
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <div class="p-2 bg-success bg-opacity-10 rounded">
+                                                        <h4 id="lights-on-percentage" class="text-success mb-0">78%</h4>
+                                                        <small>On</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="p-2 bg-danger bg-opacity-10 rounded">
+                                                        <h4 id="lights-off-percentage" class="text-danger mb-0">22%</h4>
+                                                        <small>Off</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chart-container mt-auto">
+                                            <canvas id="lights-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CCMS Devices Card -->
+                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">CCMS Devices</h5>
+                                    </div>
+                                    <div class="card-body d-flex flex-column pointer">
+                                        <div class="text-center mb-3">
+                                            <h2 id="total-ccms">45</h2>
+                                            <p class="text-muted mb-3">Total CCMS Devices</p>
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <div class="p-2 bg-success bg-opacity-10 rounded cursor-pointer" onclick="activeModal()">
+                                                        <h4 id="ccms-on" class="text-success mb-0">38</h4>
+                                                        <small>Online</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="p-2 bg-danger bg-opacity-10 rounded cursor-pointer" onclick="openNonActiveModal()">
+                                                        <h4 id="ccms-off" class="text-danger mb-0">7</h4>
+                                                        <small>Offline</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chart-container mt-auto">
+                                            <canvas id="ccms-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Connected Load Card -->
+                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Connected Load</h5>
+                                    </div>
+                                    <div class="card-body d-flex flex-column pointer">
+                                        <div class="text-center mb-3">
+                                            <h2 id="cumulative-load">2.5 W</h2>
+                                            <p class="text-muted mb-3">Installed Load</p>
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <div class="p-2 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-90 text-center">
+                                                        <div>
+                                                            <h4 id="installed-load" class="text-primary mb-0">3.2 W</h4>
+                                                            <small>Active Load</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6" id="inactive-load-container">
+                                                    <div class="p-2 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-100 text-center">
+                                                        <div>
+                                                            <h4 id="active-load" class="text-secondary mb-0"></h4>
+                                                            <small>Inactive Load</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chart-container mt-auto">
+                                            <canvas id="load-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Device Map -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-0">Device Map</h5>
+                                        <select class="form-select pointer" id="locationsDropdown" style="width: auto;"></select>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="map-container" id="map"></div>
+                                        <div class="col-12 mt-2">
+                                            <small>* <i class="bi bi-geo-alt-fill text-danger"></i> Lights are Turned OFF</small>
+                                            <small>* <i class="bi bi-geo-alt-fill text-success"></i> Lights are turned ON</small>
+                                            <small>* <i class="bi bi-geo-alt-fill text-warning"></i> Poor Network Units</small>
+                                            <small>* <i class="bi bi-geo-alt-fill text-purple"></i> Communication Loss Units</small>
+                                            <small>* <i class="bi bi-geo-alt-fill text-primary"></i> Power Fail Units</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Updates Panel -->
+                    <div class="col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header fw-bold">
+                                <i class="bi bi-chat-dots-fill"></i> Updates
+                            </div>
+                            <div class="card-body">
+                                <div class="updates-container list-group overflow-y-auto" id="updates-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <?php
-      include(BASE_PATH."dropdown-selection/device-list.php");
-      ?>
-      <div class="row">
-        <div class="col-lg-8">
-          <div class="row pe-0 pe-lg-2 h-100">
-            <div class="col-12 rounded mt-2 p-0 ">
-              <div class="row">
-                <div class="col-md-4 col-12 pointer">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#TotalModal" id="total_device">
-                    <div class="card-body m-0 p-0">
-                      <p class="card-text fw-semibold text-info-emphasis m-0 py-1"><i class="bi bi-bar-chart-fill h4"></i> Total</p>
-                      <h3 class="card-title py-2 text-primary-emphasis" id="total_devices">0</h3>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-6 col-md-4 mt-3 mt-md-0 pointer ">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#installedModal" id="installed_devices_list">
-                    <div class="card-body m-0 p-0">
-                      <p class="card-text fw-semibold text-info-emphasis m-0 py-1"><i class="bi bi-check-circle-fill h4"></i> Installed</p>
-                      <h3 class="card-title py-2 text-primary-emphasis" id="installed_devices">0</h3>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-6 col-md-4 mt-3 mt-md-0 pointer">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#notinstalledModal"  id="not_installed_devices_list">
-                    <div class="card-body m-0 p-0">
-                      <p class="card-text fw-semibold text-info-emphasis m-0 py-1"><i class="bi bi-x-circle-fill h4"></i> Not-installed</p>
-                      <h3 class="card-title py-2 text-primary-emphasis" id="not_installed_devices">0</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12 rounded mt-3 p-0">
-              <div class="row">
-                <div class="col-xl-3 col-6 pointer">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#activeModal" id="active_device_list">
-                    <div class="card-body m-0 p-0">
-                      <p class="card-text fw-semibold m-0 py-1 text-success-emphasis "><i class="bi bi-lightbulb-fill h4"></i> Active</p>
-                      <!-- <hr class="mt-0"> -->
-                      <h3 class="card-title py-2 text-success-emphasis" id="active_devices">0</h3>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-6 pointer">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#activePoorNetworkModal" id="poor_nw_device_list">
-                    <div class="card-body m-0 p-0">
-                      <p class="card-text fw-semibold m-0 py-1 text-warning-emphasis"><i class="bi bi-exclamation-triangle-fill h4"></i> Poor N/W</p>
-                      <!-- <hr class="mt-0"> -->
-                      <h3 class="card-title py-2 text-warning-emphasis text-opacity-25" id="poornetwork">0</h3>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-6 pointer mt-3 mt-xl-0" >
-                  <div class="card text-center shadow"data-bs-toggle="modal" data-bs-target="#powerfailureModal" id="power_failure_device_list">
-                    <div class="card-body m-0 p-0">
-                      <p class="card-text fw-semibold m-0 py-1 text-secondary-emphasis"><i class="bi bi-power h4"></i> Input Power Fail</p>
-                      <!-- <hr class="mt-0"> -->
-                      <h3 class="card-title py-2 text-secondary-emphasis" id="input_power_fail">0</h3>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-6 pointer mt-3 mt-xl-0">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#faultModal" id="faulty_device_list">
-                    <div class="card-body m-0 p-0">
-                      <p class="card-text fw-semibold m-0 py-1 text-danger-emphasis"><i class="bi bi-bug-fill h4"></i> Faulty</p>
-                      <!-- <hr class="mt-0"> -->
-                      <h3 class="card-title py-2 text-danger-emphasis" id="faulty">0</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12 rounded mt-3 p-0">
-              <div class="row">
-                <div class="col-12 col-md-4 pointer">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#AutoOnModal" id="auto_on_devices_list">
-                    <div class="card-body m-0 p-0 text-success-emphasis">
-                      <p class="card-text fw-semibold m-0 py-1"> <i class="bi bi-clock-fill h4"></i> Auto/System On</p>
-                      <!-- <hr class="mt-0"> -->
-                      <h3 class="card-title py-2" id="auto_on">0</h3>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-6 col-md-4 mt-3 mt-md-0 pointer">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#manualOnModal" id="manual_on_devices_list">
-                    <div class="card-body m-0 p-0 text-info-emphasis">
-                      <p class="card-text fw-semibold m-0 py-1">  <i class="bi bi-hand-index-fill h4"></i> Manual On</p>
-                      <!-- <hr class="mt-0"> -->
-                      <h3 class="card-title py-2" id="manual_on">0</h3>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-6 col-md-4 mt-3 mt-md-0 pointer">
-                  <div class="card text-center shadow" data-bs-toggle="modal" data-bs-target="#offModal" id="off_devices_list">
-                    <div class="card-body m-0 p-0 text-danger-emphasis">
-                      <p class="card-text fw-semibold m-0 py-1"> <i class="bi bi-toggle-off h4"></i> OFF</p>
-                      <!-- <hr class="mt-0"> -->
-                      <h3 class="card-title py-2" id="off">0</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12 rounded mt-3 p-0 ">
-              <div class="row">
-                <div class="col-xl-6 ">
-                  <div class="card h-100 shadow-sm text-left p-2">
-                    <p class="d-flex align-items-center"> <i class="bi bi-lamp-fill h4"></i> Installed Lights: <span><span class="h3 ms-4 text-primary-emphasis" id="installed_lights"> 2562</span> </span>
-                    </p>
-                    <div class="progress">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: 50%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" id="installed_lights_on">60%-ON</div>
-                      <div class="progress-bar bg-danger" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" id="installed_lights_off">40%-OFF</div>
-
-                    </div>
-
-                  </div>
-                </div>
-                <div class="col-xl-6 mt-lg-0 mt-3">
-                  <div class="card h-100 shadow-sm text-left p-2">
-                    <p class="d-flex align-items-center"><i class="bi bi-plug h4"></i> Cumulative Load (watts)</p>
-                    <div class="progress" role="progressbar" aria-label="Primary example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                      <div class="progress-bar bg-primary" style="width: 100%" id="installed_load">Intalled load- 0</div>
-                    </div>
-
-                    <div class="progress mt-2" role="progressbar" aria-label="Animated striped example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
-                      <div class="progress-bar progress-bar-striped bg-info progress-bar-animated overflow-visible text-light-emphasis" style="width: 0%" id="active_load">Active - 0</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12 rounded mt-3 p-0">
-              <div class="row">
-
-
-                <?php
-                if($role!="SUPERADMIN")
-                {
-                  $alerts_card_height='500px';
-                  ?>
-                  <div class="col-12">
-                    <div class="card text-center shadow">
-                      <div class="card-body m-0 p-0">
-                        <p class="card-text fw-semibold m-0 py-1"> <i class="bi bi-lightning-fill h4"></i> Total Consumption (Units)</p>
-
-                        <h3 class="card-title py-2" id="total_consumption_units">0</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <?php
-                }
-                else{
-                  $alerts_card_height='600px';
-                  ?>
-                  <div class="col-12 col-md-6">
-                    <div class="card text-center shadow">
-                      <div class="card-body m-0 p-0">
-                        <p class="card-text fw-semibold m-0 py-1"> <i class="bi bi-lightning-fill h4"></i> Total Consumption (Units)</p>
-
-                        <h3 class="card-title py-2" id="total_consumption_units">0</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12 col-md-6 mt-3 mt-md-0">
-                    <div class="card text-center shadow">
-                      <div class="card-body m-0 p-0">
-                        <p class="card-text fw-semibold m-0 py-1"><i class="bi bi-graph-up-arrow h4"></i> Energy Saved (Units)</p>
-
-                        <h3 class="card-title py-2" id="energy_saved_units">0</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12 col-md-6 mt-3">
-                    <div class="card text-center shadow">
-                      <div class="card-body m-0 p-0">
-                        <p class="card-text fw-semibold m-0 py-1"><i class="bi bi-currency-rupee h4"></i>Amount Saved(INR)</p>
-
-                        <h3 class="card-title py-2" id="amount_saved">0</h3>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-12 col-md-6 mt-3">
-                    <div class="card text-center shadow">
-                      <div class="card-body m-0 p-0">
-                        <p class="card-text fw-semibold m-0 py-1"><i class="bi bi-tree-fill h4"></i> Co2 Saved (Kg)</p>
-
-                        <h3 class="card-title py-2" id="co2_saved">0</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <?php
-                }
-                ?>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-lg-4 ">
-          <div class="row ps-0 ps-lg-2 h-100">
-            <div class="col-12 rounded mt-4 mt-lg-2 p-0">
-              <div class="card bg-light-subtle shadow">
-                <div class="card-header fw-bold">
-                  <i class="bi bi-chat-dots-fill"></i> Updates
-                </div>
-                <div class="card-body">
-                  <div id="alerts_list" class="list-group overflow-y-auto" style=" height:<?php echo $alerts_card_height; ?>;">
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom JavaScript -->
+    <?php
+    include(BASE_PATH . "dashboard/dashboard_modals.php");
+    ?>
+</body>
+
+</html>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvlom5_AlCYoIgXu94yl_VyRRRBc0xSFQ&callback=initMap" async defer></script>
+<script src="<?php echo BASE_PATH; ?>assets/js/sidebar-menu.js"></script>
+<script src="<?php echo BASE_PATH; ?>assets/js/project/map.js"></script>
+
+<script src="<?php echo BASE_PATH; ?>assets/js/project/device-dashboard.js"></script>
 
 <?php
-include(BASE_PATH."dashboard/dashboard_modals.php");
+include(BASE_PATH . "assets/html/body-end.php");
+include(BASE_PATH . "assets/html/html-end.php");
 ?>
-
-</main>
-<script src="<?php echo BASE_PATH;?>assets/js/sidebar-menu.js"></script>
-<script src="<?php echo BASE_PATH;?>assets/js/project/dashboard.js"></script>
-
-
-<?php
-include(BASE_PATH."assets/html/body-end.php"); 
-include(BASE_PATH."assets/html/html-end.php"); 
-?>
-
-

@@ -66,6 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 						<h1>Nandyala Municipality <br>Street Lighting-Centralized Control Monitoring System</h1>
 					</div>
 				</div>
+				<!-- <div class="title-container">
+						<h1 class="responsive-title text-center">
+							Nandyala Municipality <br>Street Lighting-Centralized Control Monitoring System
+						</h1>
+					</div> -->
 				<div class="col-md-2 col-xl-3"></div>
 			</div>
 			<?php
