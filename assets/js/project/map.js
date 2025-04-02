@@ -21,15 +21,15 @@ var user_map="";
 var group="";
 var modal_event=0;
 
-let group_list = document.getElementById('group-list');
+let group_list_map = document.getElementById('group-list');
 var group_name=localStorage.getItem("GroupNameValue")
 if(group_name==""||group_name==null)
 {
-	group_name= group_list.value;
+	group_name= group_list_map.value;
 }
 gps_initMaps(group_name);
-group_list.addEventListener('change', function() {
-	group_name = group_list.value;
+group_list_map.addEventListener('change', function() {
+	group_name = group_list_map.value;
 	gps_initMaps(group_name);
 });
 

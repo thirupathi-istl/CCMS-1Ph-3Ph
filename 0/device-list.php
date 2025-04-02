@@ -2,7 +2,7 @@
 require_once 'config-path.php';
 require_once '../session/session-manager.php';
 SessionManager::checkSession();
-$sessionVars =SessionManager::SessionVariables();
+$sessionVars = SessionManager::SessionVariables();
 
 $mobile_no = $sessionVars['mobile_no'];
 $user_id = $sessionVars['user_id'];
@@ -11,10 +11,11 @@ $role = $sessionVars['role'];
 ?>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
+
 <head>
     <title>Device List</title>
     <?php
-    include(BASE_PATH."assets/html/start-page.php");
+    include(BASE_PATH . "assets/html/start-page.php");
     ?>
     <div class="d-flex flex-column flex-shrink-0 p-3 main-content ">
         <div class="container-fluid">
@@ -24,7 +25,7 @@ $role = $sessionVars['role'];
                 </div>
             </div>
             <?php
-            include(BASE_PATH."dropdown-selection/device-list.php");
+            include(BASE_PATH . "dropdown-selection/device-list.php");
             ?>
 
             <div class="row justify-content-end align-items-center mt-3 p-0">
@@ -48,8 +49,8 @@ $role = $sessionVars['role'];
                         <table class="table table-striped table-type-1 w-100 text-center deviceListSearch">
                             <thead>
                                 <tr>
-                                    <th class="table-header-row-1">Device-Name</th>
                                     <th class="table-header-row-1">Device-ID</th>
+                                    <th class="table-header-row-1">Device-Name</th>
                                     <th class="table-header-row-1">Installation Status</th>
                                     <th class="table-header-row-1">Installed Date</th>
                                     <th class="table-header-row-1">Capacity(kW)</th>
@@ -72,18 +73,24 @@ $role = $sessionVars['role'];
                 </div>
             </div>
         </div>
-    </div></div>
-</div>
-<?php
-include(BASE_PATH."device-list/html/add_device.php");
-include(BASE_PATH."device-list/html/installedlights.php");
-include(BASE_PATH."device-list/html/addlight.php");
-?>
-</main>
-<script src="<?php echo BASE_PATH;?>assets/js/sidebar-menu.js"></script>
-<script src="<?php echo BASE_PATH;?>assets/js/project/device-list.js"></script>
-<script src="<?php echo BASE_PATH;?>js_modal_scripts/searchbar.js"></script>
-<?php
-include(BASE_PATH."assets/html/body-end.php");
-include(BASE_PATH."assets/html/html-end.php");
-?>
+    </div>
+    </div>
+    <!-- Edit Modal -->
+
+
+    </div>
+    <?php
+    include(BASE_PATH . "device-list/html/add_device.php");
+    include(BASE_PATH . "device-list/html/installedlights.php");
+    include(BASE_PATH . "device-list/html/addlight.php");
+    include(BASE_PATH . "device-list/html/edit_name_modal.php");
+
+    ?>
+    </main>
+    <script src="<?php echo BASE_PATH; ?>assets/js/sidebar-menu.js"></script>
+    <script src="<?php echo BASE_PATH; ?>assets/js/project/device-list.js"></script>
+    <script src="<?php echo BASE_PATH; ?>js_modal_scripts/searchbar.js"></script>
+    <?php
+    include(BASE_PATH . "assets/html/body-end.php");
+    include(BASE_PATH . "assets/html/html-end.php");
+    ?>

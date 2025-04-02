@@ -12,19 +12,3 @@ SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE 
 
 SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
 
-SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
-
-SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
-
-SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
-
-SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
-
-SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
-
-SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
-
-SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
-
-SELECT `device_group_or_area` AS `group_list`  FROM device_list_by_group  WHERE login_id = ?  GROUP BY `device_group_or_area` ORDER BY `device_group_or_area`
-
