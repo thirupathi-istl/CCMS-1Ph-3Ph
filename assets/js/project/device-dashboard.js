@@ -135,7 +135,7 @@ function initializeLoadCard(data) {
     const installedValue = parseFloat(data.installedLoad);
     let nonActiveValue = parseFloat(data.inactiveLoad);
 
-    nonActiveValue = -20;
+    
     // Ensure the values are valid numbers
     if (isNaN(cumulativeValue) || isNaN(installedValue) || isNaN(nonActiveValue)) {
         console.error("Error: Cumulative Load, Installed Load, or Active Load is not a valid number.");
