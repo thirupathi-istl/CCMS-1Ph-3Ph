@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
                     }
                     mysqli_free_result($electrician_result);
 
-                    $return_response .= '<div class="alert-item">
+                    $return_response .= '<div class="alert-item list-group-item">
                         <div class="device-header">
                             <span class="device-name">
                                 <i class="bi bi-cpu"></i>
@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
                         </div>
                         <div class="mb-1 font-small text-info-emphasis">' . $update . '</div>
                         <div class="d-flex justify-content-end">
-                            <span class="timestamp">
+                            <span class="timestamp text-primary">
                                 <i class="bi bi-clock"></i>
                                 ' . $date_time . '
                             </span>

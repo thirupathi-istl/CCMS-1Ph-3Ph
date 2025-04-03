@@ -86,7 +86,7 @@
 							<li><a href="pending-actions.php" class="nav-link link-body-emphasis d-inline-flex text-decoration-none rounded"><i class="bi bi-arrow-return-right"></i>Pending Actions</a></li>
 						<?php endif; ?>
 						<?php if (hasPermission('thresholdsettings', $menu_list)): ?>
-							<li><a href="add-new-electrician-devices1.php" class="nav-link link-body-emphasis d-inline-flex text-decoration-none rounded"><i class="bi bi-arrow-return-right"></i>Assign Devices </a></li>
+							<li><a href="add-new-electrician-devices1.php" class="nav-link link-body-emphasis d-inline-flex text-decoration-none rounded"><i class="bi bi-arrow-return-right"></i>Add Electrician Devices </a></li>
 						<?php endif; ?>
 					</ul>
 				</div>

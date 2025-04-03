@@ -185,7 +185,7 @@ function initializeLoadCard(data) {
         inactiveLoadContainer.innerHTML = `
             <div class="p-2 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-90 text-center fixed-size">
                 <div>
-                    <h4 id="active-load" class="text-secondary mb-0">${nonActiveValue} </h4>
+                    <h4 id="active-load" class=" mb-0">${nonActiveValue} </h4>
                     <small>Inactive Load</small>
                 </div>
             </div>
