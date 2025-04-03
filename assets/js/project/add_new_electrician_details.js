@@ -562,8 +562,8 @@ function removeElectricianAccess(electricianId) {
             .then(data => {
                 alert(data.message);
                 var group_id = document.getElementById('group-list').value;
-
-                fetchElectricians(group_id);
+                refresh_data();
+                // fetchElectricians(group_id);
             })
             .catch(error => console.error("Error removing electrician:", error));
     }
@@ -680,5 +680,14 @@ function filterTable() {
         } else {
             rows[i].style.display = "none"; // Hide the row
         }
+    }
+}
+function validatePhoneNumber(input) {
+    // Remove any non-numeric characters
+    input.value = input.value.replace(/[^0-9]/g, '');
+
+    // Limit to 10 digits
+    if (input.value.length > 10) {
+        input.value = input.value.slice(0, 10);
     }
 }
