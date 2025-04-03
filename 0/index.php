@@ -70,7 +70,7 @@ SessionManager::checkSession();
             display: flex;
             align-items: center;
             gap: 16px;
-            border-top: 1px solid #f3f4f6;
+            /* border-top: 1px solid #f3f4f6; */
             padding-top: 8px;
             flex-wrap: wrap;
             /* Allow wrapping for small screens */
@@ -209,7 +209,7 @@ SessionManager::checkSession();
                                             <div class="row g-2">
                                                 <div class="col-6">
                                                     <div class="p-2 bg-success bg-opacity-10 rounded">
-                                                        <h4 id="lights-on-percentage" class="text-success mb-0">78%</h4>
+                                                        <h4 id="lights-on-percentage" class="text-success-emphasis mb-0">78%</h4>
                                                         <small>On</small>
                                                     </div>
                                                 </div>
@@ -241,7 +241,7 @@ SessionManager::checkSession();
                                             <div class="row g-2">
                                                 <div class="col-6">
                                                     <div class="p-2 bg-success bg-opacity-10 rounded cursor-pointer" onclick="activeModal()">
-                                                        <h4 id="ccms-on" class="text-success mb-0">38</h4>
+                                                        <h4 id="ccms-on" class="text-success-emphasis mb-0">38</h4>
                                                         <small>Online</small>
                                                     </div>
                                                 </div>
