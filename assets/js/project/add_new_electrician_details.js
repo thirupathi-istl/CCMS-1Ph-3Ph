@@ -117,9 +117,11 @@ function submitElectricianForm1() {
                 $("#response-message-new").html('<div class="text-success">Electrician and devices assigned successfully.</div>');
                 // Reset the form or update the UI as needed
                 $("#selected_count1").text("0");
+                $("#select_all1").prop("checked", false);
                 // Optionally, refresh data or clear selection
                 refresh_data();
             } else {
+                $("#select_all1").prop("checked", false);
                 $("#response-message-new").html('<div class="text-danger">' + response.message + '</div>');
             }
         },
@@ -161,10 +163,12 @@ function submitElectricianForm() {
                 $("#response-message").html('<div class="text-success">Electrician and devices added successfully.</div>');
                 $("#new-Electrician-data")[0].reset();
                 $("#selected_count").text("0");
+                $("#select_all").prop("checked", false);
                 // $("#selected_count1").text("0");
                 refresh_data();
 
             } else {
+                $("#select_all").prop("checked", false);
                 $("#response-message").html('<div class="text-danger">' + response.message + '</div>');
             }
         },
@@ -460,7 +464,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function fetchElectricians(group_id) {
-    
+
     // let group_id = document.getElementById('group-list').value; // Correct variable name
 
     if (group_id) {
@@ -481,32 +485,103 @@ function fetchElectricians(group_id) {
     }
 }
 
-function updateElectricianTable(data) {
-    let tableHTML = `<table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Device ID</th>
-                    <th>Electrician Name</th>
-                    <th>Phone</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>`;
+// function updateElectricianTable(data) {
+//     let tableHTML = `<table class="table text-center table-bordered  w-100 SimListSearch">
+//                             <thead>
+//                                 <tr>
+//                                     <th class="table-header1-row-1">Device-ID</th>
+//                                     <th class="table-header1-row-1">Electrician Name</th>
+//                                     <th class="table-header1-row-1">Phone</th>
+//                                     <th class="table-header1-row-1">Actions</th>
 
-    // Create an array of device_ids from electricians to filter unassigned devices
-    let electricianDeviceIds = data.electricians.map(electrician => electrician.device_id);
+//                                 </tr>
+//                             </thead>
+//             <tbody>`;
+
+//     // Create an array of device_ids from electricians to filter unassigned devices
+//     let electricianDeviceIds = data.electricians.map(electrician => electrician.device_id);
+
+//     // Render electricians table
+//     if (Array.isArray(data.electricians) && data.electricians.length > 0) {
+//         data.electricians.forEach(electrician => {
+//             tableHTML += `<tr>
+//                     <td>${electrician.device_id}</td>
+//                     <td>${electrician.name}</td>
+//                     <td>${electrician.phone}</td>
+//                     <td>
+//                         <!-- Responsive buttons -->
+//                         <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+//                             <button class="btn btn-danger btn-sm w-100 w-sm-auto remove-access" onclick="removeElectricianAccess(${electrician.id})">Remove</button>
+//                             <button class="btn btn-primary btn-sm w-100 w-sm-auto edit-electrician" 
+//                                     data-id="${electrician.device_id}" 
+//                                     data-bs-toggle="modal" 
+//                                     data-bs-target="#editElectricianModal">
+//                                 Edit
+//                             </button>
+//                         </div>
+//                     </td>
+//                 </tr>`;
+//         });
+//     } else {
+//         // tableHTML += `<tr><td colspan="4" class="text-center">No electricians assigned to this group.</td></tr>`;
+//     }
+
+//     // Filter unassigned devices to exclude those that already have an electrician
+//     // if (Array.isArray(data.unassigned_devices) && data.unassigned_devices.length > 0) {
+//     //     // Filter out devices that are already in the electricians list
+//     //     let filteredUnassignedDevices = data.unassigned_devices.filter(device => !electricianDeviceIds.includes(device.device_id));
+
+//     //     // Render unassigned devices if there are any left after filtering
+//     //     if (filteredUnassignedDevices.length > 0) {
+//     //         filteredUnassignedDevices.forEach(device => {
+//     //             tableHTML += `<tr>
+//     //                     <td>${device.device_id}</td>
+//     //                     <td></td> <!-- Empty name for unassigned devices -->
+//     //                     <td></td> <!-- Empty phone for unassigned devices -->
+//     //                     <td>
+//     //                         <button class="btn btn-success btn-sm w-100 w-sm-auto edit-electrician" data-id="${device.device_id}" data-bs-toggle="modal" data-bs-target="#editElectricianModal">Add Electrician</button>
+//     //                     </td>
+//     //                 </tr>`;
+//     //         });
+//     //     } else {
+//     //         tableHTML += `<tr><td colspan="4" class="text-center">No unassigned devices available.</td></tr>`;
+//     //     }
+//     // }
+
+//     tableHTML += `</tbody></table>`;
+//     document.getElementById("electricianTable").innerHTML = tableHTML;
+// }
+function updateElectricianTable(data) {
+    let tableHTML = `<table class="table text-center table-bordered w-100 SimListSearch">
+                        <thead>
+                            <tr>
+                                <th class="table-header1-row-1" style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
+                                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                        <input type="checkbox" id="select_all_electricians" style="transform: scale(0.9); margin: 0;" />
+                                        <span>All</span>
+                                    </div>
+                                </th>
+                                <th class="table-header1-row-1">Device-ID</th>
+                                <th class="table-header1-row-1">Electrician Name</th>
+                                <th class="table-header1-row-1">Phone</th>
+                                <th class="table-header1-row-1">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
 
     // Render electricians table
     if (Array.isArray(data.electricians) && data.electricians.length > 0) {
         data.electricians.forEach(electrician => {
             tableHTML += `<tr>
+                    <td style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
+                        <input type="checkbox" class="row-checkbox" value="${electrician.id}" style="transform: scale(0.9); margin: 0 auto; display: block;" />
+                    </td>
                     <td>${electrician.device_id}</td>
                     <td>${electrician.name}</td>
                     <td>${electrician.phone}</td>
                     <td>
-                        <!-- Responsive buttons -->
                         <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
-                            <button class="btn btn-danger btn-sm w-100 w-sm-auto remove-access" onclick="removeElectricianAccess(${electrician.id})">Remove Access</button>
+                            <button class="btn btn-danger btn-sm w-100 w-sm-auto remove-access" onclick="removeElectricianAccess(${electrician.id})">Remove</button>
                             <button class="btn btn-primary btn-sm w-100 w-sm-auto edit-electrician" 
                                     data-id="${electrician.device_id}" 
                                     data-bs-toggle="modal" 
@@ -518,34 +593,69 @@ function updateElectricianTable(data) {
                 </tr>`;
         });
     } else {
-        // tableHTML += `<tr><td colspan="4" class="text-center">No electricians assigned to this group.</td></tr>`;
+        tableHTML += `<tr><td colspan="5" class="text-center">No electricians assigned to this group.</td></tr>`;
     }
-
-    // Filter unassigned devices to exclude those that already have an electrician
-    // if (Array.isArray(data.unassigned_devices) && data.unassigned_devices.length > 0) {
-    //     // Filter out devices that are already in the electricians list
-    //     let filteredUnassignedDevices = data.unassigned_devices.filter(device => !electricianDeviceIds.includes(device.device_id));
-
-    //     // Render unassigned devices if there are any left after filtering
-    //     if (filteredUnassignedDevices.length > 0) {
-    //         filteredUnassignedDevices.forEach(device => {
-    //             tableHTML += `<tr>
-    //                     <td>${device.device_id}</td>
-    //                     <td></td> <!-- Empty name for unassigned devices -->
-    //                     <td></td> <!-- Empty phone for unassigned devices -->
-    //                     <td>
-    //                         <button class="btn btn-success btn-sm w-100 w-sm-auto edit-electrician" data-id="${device.device_id}" data-bs-toggle="modal" data-bs-target="#editElectricianModal">Add Electrician</button>
-    //                     </td>
-    //                 </tr>`;
-    //         });
-    //     } else {
-    //         tableHTML += `<tr><td colspan="4" class="text-center">No unassigned devices available.</td></tr>`;
-    //     }
-    // }
 
     tableHTML += `</tbody></table>`;
     document.getElementById("electricianTable").innerHTML = tableHTML;
+
+    // Attach event listeners after table is updated
+    setupCheckboxListeners();
 }
+
+
+
+
+function setupCheckboxListeners() {
+    const selectAllCheckbox = document.getElementById("select_all_electricians"); // Updated ID
+    const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+
+    selectAllCheckbox.addEventListener("change", function () {
+        rowCheckboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
+        toggleRemoveAllButton();
+    });
+
+    rowCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", function () {
+            selectAllCheckbox.checked = document.querySelectorAll(".row-checkbox:checked").length === rowCheckboxes.length;
+            toggleRemoveAllButton();
+        });
+    });
+}
+
+function toggleRemoveAllButton() {
+    const selectedCount = document.querySelectorAll(".row-checkbox:checked").length;
+    document.getElementById("removeAllBtn").disabled = selectedCount === 0;
+}
+
+function removeSelectedElectricians() {
+    const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+    const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+    if (selectedIds.length === 0) return;
+
+    if (confirm("Are you sure you want to remove the selected electricians?")) {
+        fetch("../add_new_electrician_devices/code/remove_electrician_access.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `electrician_ids=${JSON.stringify(selectedIds)}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById("removeAllBtn").disabled = true;
+
+                // Uncheck all checkboxes after deletion
+                document.querySelectorAll(".row-checkbox:checked").forEach(cb => cb.checked = false);
+                refresh_data(); // Refresh the table after deletion
+                
+                // Hide or disable the Remove All button
+               
+            })
+            .catch(error => console.error("Error removing electricians:", error));
+    }
+}
+
 
 
 

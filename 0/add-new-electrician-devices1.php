@@ -137,22 +137,17 @@ $permission_check = 0;
                         <div class="card-body flex-grow-1">
                             <div class="row mt-2 d-flex justify-content-center">
                                 <div class="col-12">
-                                    <!-- Search Filters -->
-                                    <div class="d-flex justify-content-end mb-3">
+                                    <!-- Search and Remove All -->
+                                    <div class="d-flex justify-content-end mb-3 gap-2">
                                         <input type="text" id="searchBar" class="form-control w-25" placeholder="Search by Device ID or Electrician Name" onkeyup="filterTable()">
+                                        <button class="btn btn-danger" id="removeAllBtn" onclick="removeSelectedElectricians()" disabled>Remove All</button>
                                     </div>
-
 
                                     <!-- Table -->
                                     <div class="table-responsive w-100">
                                         <table class="table table-bordered w-100" id="electricianTable">
                                             <thead class="table-dark">
-                                                <tr>
-                                                    <th>Device ID</th>
-                                                    <th>Electrician Name</th>
-                                                    <th>Phone</th>
-                                                    <th>Actions</th>
-                                                </tr>
+                                                <!-- Dynamic Content Will Be Inserted Here -->
                                             </thead>
                                             <tbody>
                                                 <!-- Dynamic Content Will Be Inserted Here -->
@@ -162,6 +157,7 @@ $permission_check = 0;
                                 </div>
                             </div>
                         </div>
+
 
 
                     </div>
