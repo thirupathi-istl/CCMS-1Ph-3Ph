@@ -91,9 +91,10 @@ document.getElementById("addButtonSearch").addEventListener("input", addButtonSe
 catch (e) {
    
 }
-
+var interval_Id1 =interval_Id ;
 //search script device list dastboard
 function deviceListSearch() {
+    clearInterval(interval_Id);
     var input = document.getElementById("deviceListInput").value.toLowerCase().trim();
     
     // Only start searching if input has at least 3 characters
@@ -127,9 +128,25 @@ function deviceListSearch() {
     });
 }
 
+document.getElementById("deviceListInput").addEventListener("input", function () {
+   // Call the search function on every input change
+
+    // Restart the interval if input is cleared
+    if (this.value.trim() === "") {
+        // clearInterval(interval_Id); // Clear any existing interval
+        let group_name = group_list.value;
+
+        refresh_data(group_name);
+        interval_Id1 = setInterval(refresh_data, 2000); // Restart interval
+    }
+});
+
 // Add event listener for input events
 // try {
 //     document.getElementById("deviceListInput").addEventListener("input", deviceListSearch);
 // } catch (e) {
 //     console.error("Error attaching event listener: ", e);
 // }
+
+
+

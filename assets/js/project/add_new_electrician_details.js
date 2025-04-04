@@ -89,10 +89,7 @@ function submitElectricianForm1() {
     let selectedDevices = $("#multi_selection_device_id1").val() || [];
     let group_name = document.getElementById('group-list').value;
 
-    // if (group_name === "ALL") {
-    //     $("#response-message-new").html('<div class="text-danger">Please select devices from a specific group.</div>');
-    //     return;
-    // }
+   
 
     if (!selectedElectrician || selectedDevices.length === 0) {
         $("#response-message-new").html('<div class="text-danger">Please select an electrician and devices.</div>');

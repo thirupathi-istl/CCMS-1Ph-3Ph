@@ -17,9 +17,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["device_id"], $_POST["
         die(json_encode(["status" => "error", "message" => "Database connection failed."]));
     }
 
-    $device_id = $_POST["device_id"];
-    $new_electrician_id = $_POST["new_electrician_id"];
-    $group_id = $_POST["group_id"];
+    function sanitize_input($data, $conn) {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+        return mysqli_real_escape_string($conn, $data);
+    }
+
+    $device_id = sanitize_input($_POST["device_id"], $conn);
+    $new_electrician_id = sanitize_input($_POST["new_electrician_id"], $conn);
+    $group_id = sanitize_input($_POST["group_id"], $conn);
 
     // Fetch new electrician details
     $fetch_sql = "SELECT name, phone_number FROM electricians_list WHERE id = ? and user_login_id = ?";
@@ -40,7 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["device_id"], $_POST["
         $stmt->fetch();
         $stmt->close();
 
-        // Use the fetched group_id as group_area in both the update and insert operations
         $group_area = $fetched_group_id;
 
         // Check if the device already has an associated electrician
@@ -62,9 +68,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["device_id"], $_POST["
             }
         } else {
             // Insert a new record if no matching device_id is found
-            $insert_sql = "INSERT INTO electrician_devices (device_id, electrician_name, phone_number, group_area,user_login_id) VALUES (?, ?, ?, ?,?)";
+            $insert_sql = "INSERT INTO electrician_devices (device_id, electrician_name, phone_number, group_area, user_login_id) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($insert_sql);
-            $stmt->bind_param("sssss", $device_id, $electrician_name, $electrician_phone, $group_area,$user_login_id);
+            $stmt->bind_param("sssss", $device_id, $electrician_name, $electrician_phone, $group_area, $user_login_id);
             if ($stmt->execute()) {
                 echo json_encode(["status" => "success", "message" => "Electrician added successfully."]);
             } else {
