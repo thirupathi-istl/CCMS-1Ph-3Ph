@@ -247,9 +247,9 @@ $sessionVars = SessionManager::SessionVariables();
                                                 <div class="icon-container bg-light-warning">
                                                     <i class="bi bi-lightning-charge-fill text-warning fs-3"></i>
                                                 </div>
-                                                <h6 class="text-muted mb-3">Energy Consumption</h6>
+                                                <h6 class="text-muted mb-3">Energy Consumption(kWh)</h6>
                                                 <div id="kwh-value" class="consumption-value mb-2">-</div>
-                                                <div class="text-muted small">kilowatt-hours (kWh)</div>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -261,9 +261,9 @@ $sessionVars = SessionManager::SessionVariables();
                                                 <div class="icon-container bg-light-primary">
                                                     <i class="bi bi-lightning text-primary fs-3"></i>
                                                 </div>
-                                                <h6 class="text-muted mb-3">Apparent Energy</h6>
+                                                <h6 class="text-muted mb-3">Energy Consumption(kVAh)</h6>
                                                 <div id="kvah-value" class="consumption-value mb-2">-</div>
-                                                <div class="text-muted small">kilovolt-ampere-hours (kVAh)</div>
+                                                
                                             </div>
                                         </div>
                                     </div>

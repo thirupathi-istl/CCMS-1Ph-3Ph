@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				<div class="col-md-2 col-xl-3"></div>
 				<div class="col-12 col-md-8 col-xl-6 justify-content-center">
 					<div class="title-container fs-sm-18">
-						<h1>Khammam Municipality <br>Street Lighting-Centralized Control Monitoring System</h1>
+						<h1>Khammam Municipal Corporation <br>Street Lighting-Centralized Control Monitoring System</h1>
 					</div>
 				</div>
 				<!-- <div class="title-container">
