@@ -62,7 +62,7 @@
 		<?php if (hasPermission('data_report', $menu_list)): ?>
 			<li>
 				<a href="energy-consumption.php" class="nav-link link-body-emphasis">
-					<i class="bi bi-calculator text-dark"></i>
+					<i class="bi bi-calculator"></i>
 					Energy Consumption
 				</a>
 			</li>

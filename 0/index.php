@@ -116,10 +116,10 @@ SessionManager::checkSession();
             }
         }
 
-       
+        
 
         .map-container {
-            height: 350px;
+            height: 400px;
             background-color: #f1f5f9;
             border-radius: 0.5rem;
             margin-bottom: 0.5rem;
@@ -299,15 +299,15 @@ SessionManager::checkSession();
             </div>
         </div>
     </div>
-    </div>
+</div>
 
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Custom JavaScript -->
-    <?php
-    include(BASE_PATH . "dashboard/dashboard_modals.php");
-    ?>
+<!-- Custom JavaScript -->
+<?php
+include(BASE_PATH . "dashboard/dashboard_modals.php");
+?>
 </body>
 
 </html>
