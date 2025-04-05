@@ -29,56 +29,46 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["device_id"], $_POST["
     $group_id = sanitize_input($_POST["group_id"], $conn);
 
     // Fetch new electrician details
-    $fetch_sql = "SELECT name, phone_number FROM electricians_list WHERE id = ? and user_login_id = ?";
-    $stmt = $conn->prepare($fetch_sql);
-    $stmt->bind_param("ii", $new_electrician_id, $user_login_id);
-    $stmt->execute();
-    $stmt->bind_result($electrician_name, $electrician_phone);
-    $stmt->fetch();
-    $stmt->close();
+    $fetch_sql = "SELECT name, phone_number FROM electricians_list WHERE id = '$new_electrician_id' AND user_login_id = '$user_login_id'";
+    $result = mysqli_query($conn, $fetch_sql);
 
-    if ($electrician_name && $electrician_phone) {
-        // Fetch group_id or device_group_or_area before updating or inserting
-        $fetch_group_sql = "SELECT device_group_or_area FROM user_device_group_view WHERE device_id = ? LIMIT 1";
-        $stmt = $conn->prepare($fetch_group_sql);
-        $stmt->bind_param("s", $device_id);
-        $stmt->execute();
-        $stmt->bind_result($fetched_group_id);
-        $stmt->fetch();
-        $stmt->close();
+    if ($row = mysqli_fetch_assoc($result)) {
+        $electrician_name = $row['name'];
+        $electrician_phone = $row['phone_number'];
 
-        $group_area = $fetched_group_id;
+        // Fetch group_area
+        $fetch_group_sql = "SELECT device_group_or_area FROM user_device_group_view WHERE device_id = '$device_id' LIMIT 1";
+        $result_group = mysqli_query($conn, $fetch_group_sql);
+
+        $group_area = '';
+        if ($row_group = mysqli_fetch_assoc($result_group)) {
+            $group_area = $row_group['device_group_or_area'];
+        }
 
         // Check if the device already has an associated electrician
-        $check_sql = "SELECT id FROM electrician_devices WHERE device_id = ?";
-        $stmt = $conn->prepare($check_sql);
-        $stmt->bind_param("s", $device_id);
-        $stmt->execute();
-        $stmt->store_result();
+        $check_sql = "SELECT id FROM electrician_devices WHERE device_id = '$device_id'";
+        $check_result = mysqli_query($conn, $check_sql);
 
-        if ($stmt->num_rows > 0) {
-            // Update the existing record with the fetched group_area
-            $update_sql = "UPDATE electrician_devices SET electrician_name = ?, phone_number = ?, group_area = ? WHERE device_id = ?";
-            $stmt = $conn->prepare($update_sql);
-            $stmt->bind_param("ssss", $electrician_name, $electrician_phone, $group_area, $device_id);
-            if ($stmt->execute()) {
+        if (mysqli_num_rows($check_result) > 0) {
+            // Update the existing record
+            $update_sql = "UPDATE electrician_devices 
+                           SET electrician_name = '$electrician_name', phone_number = '$electrician_phone', group_area = '$group_area' 
+                           WHERE device_id = '$device_id'";
+            if (mysqli_query($conn, $update_sql)) {
                 echo json_encode(["status" => "success", "message" => "Electrician updated successfully."]);
             } else {
                 echo json_encode(["status" => "error", "message" => "Failed to update electrician."]);
             }
         } else {
-            // Insert a new record if no matching device_id is found
-            $insert_sql = "INSERT INTO electrician_devices (device_id, electrician_name, phone_number, group_area, user_login_id) VALUES (?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($insert_sql);
-            $stmt->bind_param("sssss", $device_id, $electrician_name, $electrician_phone, $group_area, $user_login_id);
-            if ($stmt->execute()) {
+            // Insert new record
+            $insert_sql = "INSERT INTO electrician_devices (device_id, electrician_name, phone_number, group_area, user_login_id) 
+                           VALUES ('$device_id', '$electrician_name', '$electrician_phone', '$group_area', '$user_login_id')";
+            if (mysqli_query($conn, $insert_sql)) {
                 echo json_encode(["status" => "success", "message" => "Electrician added successfully."]);
             } else {
                 echo json_encode(["status" => "error", "message" => "Failed to add electrician."]);
             }
         }
-
-        $stmt->close();
     } else {
         echo json_encode(["status" => "error", "message" => "Electrician details not found."]);
     }

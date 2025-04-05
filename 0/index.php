@@ -18,7 +18,7 @@ SessionManager::checkSession();
 
 
         .chart-container {
-            height: 120px;
+            height: 150px;
             position: relative;
         }
 
@@ -116,59 +116,10 @@ SessionManager::checkSession();
             }
         }
 
-        /* .update-item {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            display: flex;
-            align-items: flex-start;
-        } */
-
-        /* .update-icon {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        .update-content {
-            flex: 1;
-        }
-
-        .update-message {
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .update-timestamp {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-
-        .update-warning {
-            background-color: rgba(255, 193, 7, 0.1);
-        }
-
-        .update-info {
-            background-color: rgba(13, 110, 253, 0.1);
-        }
-
-        .update-success {
-            background-color: rgba(25, 135, 84, 0.1);
-        } */
-
-        /* Make sure cards have consistent height */
-        /* .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        } */
-
-        /* Responsive adjustments */
-        /* @media (min-width: 992px) {
-            .col-lg-4 {
-                order: 4;
-            }
-        } */
+       
 
         .map-container {
-            height: 300px;
+            height: 350px;
             background-color: #f1f5f9;
             border-radius: 0.5rem;
             margin-bottom: 0.5rem;
@@ -273,20 +224,20 @@ SessionManager::checkSession();
                             <div class="card h-100">
                                 <div class="card-header d-flex align-items-center">
                                     <h6 class="card-title mb-0 fw-semibold">
-                                        <i class="bi bi-lightning-charge-fill me-2"></i>Connected Load
+                                        <i class="bi bi-lightning-charge-fill me-2"></i>Connected Load (kW)
                                     </h6>
                                 </div>
 
 
                                 <div class="card-body d-flex flex-column pointer">
                                     <div class="text-center mb-3">
-                                        <h2 id="cumulative-load">2.5 W</h2>
+                                        <h2 id="cumulative-load"></h2>
                                         <p class="text-muted mb-3">Installed Load</p>
                                         <div class="row g-2">
                                             <div class="col-6">
                                                 <div class="p-2 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-90 text-center">
                                                     <div>
-                                                        <h4 id="installed-load" class="text-primary mb-0">3.2 W</h4>
+                                                        <h4 id="installed-load" class="text-primary mb-0"></h4>
                                                         <small>Active Load</small>
                                                     </div>
                                                 </div>

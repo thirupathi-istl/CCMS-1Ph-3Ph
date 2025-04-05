@@ -58,6 +58,18 @@
 				</a>
 			</li>
 		<?php endif; ?>
+		
+		<?php if (hasPermission('data_report', $menu_list)): ?>
+			<li>
+				<a href="energy-consumption.php" class="nav-link link-body-emphasis">
+					<i class="bi bi-calculator text-dark"></i>
+					Energy Consumption
+				</a>
+			</li>
+		<?php endif; ?>
+
+
+
 
 		<?php if (hasPermission('thresholdsettings', $menu_list) || hasPermission('group_creation', $menu_list) || hasPermission('location_update', $menu_list) || hasPermission('notification_settings', $menu_list) || hasPermission('iotsettings', $menu_list) || hasPermission('pending_actions', $menu_list)): ?>
 			<li>

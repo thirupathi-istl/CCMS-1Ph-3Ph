@@ -137,7 +137,7 @@ document.getElementById("deviceListInput").addEventListener("input", function ()
         let group_name = group_list.value;
 
         refresh_data(group_name);
-        interval_Id1 = setInterval(refresh_data, 2000); // Restart interval
+        interval_Id1 = setInterval(refresh_data, 20000); // Restart interval
     }
 });
 

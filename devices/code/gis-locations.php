@@ -9,6 +9,7 @@ $mobile_no = $sessionVars['mobile_no'];
 $user_id = $sessionVars['user_id'];
 $role = $sessionVars['role'];
 $user_login_id = $sessionVars['user_login_id'];
+$client = $sessionVars['client'];
 //=================================================
 $return_response = "";
 $total_switch_point=0;
@@ -252,7 +253,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		}
 		mysqli_close($conn_db_all);
 	}
-	echo json_encode($send);
+	echo json_encode(array($send, strtoupper($client)));
 }
 else
 {

@@ -16,7 +16,10 @@ if (group_name !== "" && group_name !== null) {
     $("#pre-loader").css('display', 'block');
 }
 
-
+function initMap()
+{
+	
+} 
 let group_list = document.getElementById('group-list');
 
 group_list.addEventListener('change', function () {
@@ -131,11 +134,11 @@ let loadChart; // Declare a global variable
 
 function initializeLoadCard(data) {
     // Extract numeric values for calculation
-    const cumulativeValue = parseFloat(data.cumulativeLoad);
-    const installedValue = parseFloat(data.installedLoad);
-    let nonActiveValue = parseFloat(data.inactiveLoad);
+    const cumulativeValue = parseFloat(data.cumulativeLoad) / 1000;
+    const installedValue = parseFloat(data.installedLoad) / 1000;
+    let nonActiveValue = parseFloat(data.inactiveLoad) / 1000;
 
-    
+
     // Ensure the values are valid numbers
     if (isNaN(cumulativeValue) || isNaN(installedValue) || isNaN(nonActiveValue)) {
         console.error("Error: Cumulative Load, Installed Load, or Active Load is not a valid number.");
@@ -154,7 +157,7 @@ function initializeLoadCard(data) {
     if (nonActiveValue < 0) {
         // Overconsumption detected, show alert UI
         // nonActiveValue=0-nonActiveValue;
-       
+
         inactiveLoadContainer.innerHTML = `
           <!-- OverConsumption Alert Card -->
         <div class="p-2 bg-danger bg-opacity-10 border border-danger rounded d-flex flex-column align-items-center justify-content-center h-90 text-center w-100">
@@ -169,7 +172,7 @@ function initializeLoadCard(data) {
                     <i class="bi bi-info-circle"></i>
                 </a>
             </div>
-            <small class="mt-1 text-danger text-wrap w-100">OverConsumption</small> 
+            <small class="mt-1 text-danger text-wrap w-100">OverLoad</small> 
         </div>
 
         `;
@@ -298,7 +301,7 @@ function createChartOptions(title) {
     };
 }
 function update_switchPoints_status(group_id) {
-    console.log(group_id);
+  
     $.ajax({
         type: "POST", // Method type
         url: "../dashboard/code/switchpoint_details.php", // PHP script URL
@@ -365,7 +368,7 @@ function update_switchPoints_status(group_id) {
             $('#active_load').css('width', activeLoadPercentage + '%');
             $('#active_load').attr('aria-valuenow', activeLoadPercentage);
             $('#active_load').text('Active - ' + activeLoad);
-            console.log(onLights);
+           
             const lightsData = {
                 total: totalLights,
                 onPercentage: onLights,
@@ -425,7 +428,7 @@ function openFaulty() {
 
 
 function installed_devices_status(group_id, status) {
-    console.log(group_id);
+
 
     $("#pre-loader").css('display', 'block');
     $.ajax({

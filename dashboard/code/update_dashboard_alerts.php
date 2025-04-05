@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     } else {
-        $sql_lights = "SELECT * FROM $central_db.`main_alerts_and_updates` WHERE device_id IN ($user_devices) ORDER BY id DESC limit 100";
+        $sql_lights = "SELECT * FROM $central_db.`alerts_and_updates` WHERE device_id IN ($user_devices) ORDER BY id DESC limit 100";
 
         if ($result = mysqli_query($conn, $sql_lights)) {
             if (mysqli_num_rows($result) > 0) {
