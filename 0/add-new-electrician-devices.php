@@ -1,3 +1,5 @@
+
+
 <?php
 require_once 'config-path.php';
 require_once BASE_PATH . 'config_db/config.php';
@@ -37,53 +39,87 @@ $permission_check = 0;
                 <div class="col-md-6">
                     <div class="card mt-3 h-100 d-flex flex-column">
                         <div class="card-header bg-primary bg-opacity-25 fw-bold">
-                            <span class="me-2">Add New Electrician</span>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-title="Info" data-bs-content="Add New Electrician">
-                                <i class="bi bi-info-circle"></i>
-                            </a>
+                            <ul class="nav nav-tabs card-header-tabs" id="electricianTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="new-tab" data-bs-toggle="tab" data-bs-target="#new-electrician" type="button" role="tab">New Electrician</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="existing-tab" data-bs-toggle="tab" data-bs-target="#existing-electrician" type="button" role="tab">Existed Electrician</button>
+                                </li>
+                            </ul>
                         </div>
                         <div class="card-body flex-grow-1">
-                            <form class="col-md-12" id="new-Electrician-data" method="post">
-                                <div class="pb-2">
-                                    <label for="Electrician-name" class="form-label">Electrician Name</label>
-                                    <input type="text" class="form-control" id="Electrician-name" name="Electrician-name" placeholder="Enter Electrician Name" required>
+                            <div class="tab-content" id="electricianTabContent">
+                                <div class="tab-pane fade show active" id="new-electrician" role="tabpanel">
+                                    <form class="col-md-12" id="new-Electrician-data" method="post">
+                                        <div class="pb-2">
+                                            <label for="Electrician-name" class="form-label">Electrician Name</label>
+                                            <input type="text" class="form-control" id="Electrician-name" name="Electrician-name" placeholder="Enter Electrician Name" required>
 
-                                    <label for="Electrician-phone" class="form-label mt-2">Phone Number</label>
-                                    <input type="tel" class="form-control" id="Electrician-phone" name="Electrician-phone" placeholder="Enter Phone Number" pattern="[0-9]{10}" maxlength="10" required>
+                                            <label for="Electrician-phone" class="form-label mt-2">Phone Number</label>
+                                            <input type="text" class="form-control" id="Electrician-phone" name="Electrician-phone"
+                                                placeholder="Enter Phone Number" maxlength="10" required
+                                                oninput="validatePhoneNumber(this)">
+
+                                        </div>
+                                        <div class="mb-2 ms-2">
+                                            <div class="col-sm-12">
+                                                <div class="custom-control custom-checkbox pl-3">
+                                                    <input type="checkbox" id="select_all" style="width: auto; margin-top:10px" />
+                                                    <label class="small"> Select All</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 text-right d-flex align-items-center ">
+                                                <div class="col-12">
+                                                    <select id="multi_selection_device_id" class="multi_selection_device_id col-12" multiple size="30" style="max-height: 250px;">
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="custom-control custom-checkbox pl-3">
+                                                    <span>Selected : <b><span id="selected_count">0</span></b> </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2" id="response-message"></div>
+
+                                        <div class="d-flex justify-content-center align-items-center mt-2">
+                                            <button type="button" class="btn btn-primary" onclick="submitElectricianForm()">Add</button>
+                                        </div>
+                                    </form>
                                 </div>
 
-                                <div class="mb-2 ms-2">
-                                    <div class="col-sm-12">
-                                        <div class="custom-control custom-checkbox pl-3">
-                                            <input type="checkbox" id="select_all" style="width: auto; margin-top:10px" />
-                                            <label class="small"> Select All</label>
+                                <div class="tab-pane fade" id="existing-electrician" role="tabpanel">
+                                    <label for="electrician_list" class="form-label">Select Electrician</label>
+                                    <select class="form-select" id="electrician_list">
+                                    </select>
+
+                                    <div class="mb-2 ms-2">
+                                        <div class="col-sm-12">
+                                            <div class="custom-control custom-checkbox pl-3">
+                                                <input type="checkbox" id="select_all1" style="width: auto; margin-top:10px" />
+                                                <label class="small"> Select All</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 text-right d-flex align-items-center ">
+                                            <div class="col-12">
+                                                <select id="multi_selection_device_id1" class="multi_selection_device_id1 col-12" multiple size="30" style="max-height: 250px;">
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="custom-control custom-checkbox pl-3">
+                                                <span>Selected : <b><span id="selected_count1">0</span></b> </span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2" id="response-message-new"></div>
+
+                                        <div class="d-flex justify-content-center align-items-center mt-2">
+                                            <button type="button" class="btn btn-primary" onclick="submitElectricianForm1()">Add</button>
                                         </div>
                                     </div>
-                                    <div class="col-sm-12 text-right d-flex align-items-center ">
-                                        <div class="col-12">
-                                            <select id="multi_selection_device_id" class="multi_selection_device_id col-12" multiple size="30" style="max-height: 250px;">
-
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <div class="custom-control custom-checkbox pl-3">
-                                            <span>Selected : <b><span id="selected_count">0</span></b> </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mt-2" id="response-message"></div>
-
-                                <div class="d-flex justify-content-center align-items-center mt-2">
-                                    <button type="button" class="btn btn-primary" onclick="submitElectricianForm()">Add</button>
-                                </div>
-                            </form>
-
-                        </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center">
-                            <div class="w-100 text-center">
-                                <div class="mt-1 text-start">
-                                    <p class="text-danger">* To Add New Electrician details </p>
                                 </div>
                             </div>
                         </div>
@@ -102,39 +138,18 @@ $permission_check = 0;
                         </div>
                         <div class="card-body flex-grow-1">
                             <div class="row mt-2 d-flex justify-content-center">
-                                <!-- <div class="col-sm-8">
-                                    <div class="mb-2 ms-2">
-                                        <label for="add_user" class="form-label">Select Electrician</label>
-                                        <select class="form-select" id="electricion_list">
-                                        </select>
+                                <div class="col-12">
+                                    <!-- Search and Remove All -->
+                                    <div class="d-flex justify-content-end mb-3 gap-2">
+                                        <input type="text" id="searchBar" class="form-control w-25" placeholder="Search by Device ID or Electrician Name" onkeyup="filterTable()">
+                                        <button class="btn btn-danger" id="removeAllBtn" onclick="removeSelectedElectricians()" disabled>Remove All</button>
                                     </div>
 
-                                    <div class="mb-2 ms-2" id="electrician_devices">
-                                    </div>
-                                </div> -->
-                                <!-- <div class="col-sm-8">
-                                    <div class="mb-2 ms-2">
-                                        <label for="device_id" class="form-label">Select Device</label>
-                                        <?php
-                                        include("../dropdown-selection/device_selection.php");
-                                        ?>
-
-                                    </div>
-
-                                    <div class="mb-2 ms-2" id="electrician_Names">
-                                    </div>
-                                </div> -->
-
-                                <div class="col-12"> <!-- Changed from col-sm-8 to col-12 for full width -->
-                                    <div class="table-responsive w-100"> <!-- Ensures the table takes full width -->
-                                        <table class="table table-bordered w-100" id="electricianTable"> <!-- Added w-100 to table -->
+                                    <!-- Table -->
+                                    <div class="table-responsive w-100">
+                                        <table class="table table-bordered w-100" id="electricianTable">
                                             <thead class="table-dark">
-                                                <tr>
-                                                    <th>Device ID</th>
-                                                    <th>Electrician Name</th>
-                                                    <th>Phone</th>
-                                                    <th>Actions</th>
-                                                </tr>
+                                                <!-- Dynamic Content Will Be Inserted Here -->
                                             </thead>
                                             <tbody>
                                                 <!-- Dynamic Content Will Be Inserted Here -->
@@ -142,19 +157,11 @@ $permission_check = 0;
                                         </table>
                                     </div>
                                 </div>
-
-
                             </div>
                         </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center">
-                            <!-- <div class="container">
-                                <div class="row">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-primary mb-2" onclick="assignDevicesToElectrician()">Assign Devices</button>
-                                    </div>
-                                </div>
-                            </div> -->
-                        </div>
+
+
+
                     </div>
                 </div>
             </div>
@@ -166,8 +173,8 @@ $permission_check = 0;
     </main>
 
     <?php
-    include(BASE_PATH . "/devices/html/group-creation.php");
-    include(BASE_PATH . "/add_new_electrician_devices.php/html/update_electrician.php");
+    include(BASE_PATH . "devices/html/group-creation.php");
+    include(BASE_PATH . "add_new_electrician_devices/html/update_electrician.php");
 
     ?>
 

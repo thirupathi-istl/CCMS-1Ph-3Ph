@@ -170,14 +170,17 @@ function get_devices_status(group_id, status)
                 if(status=="ALL")
                 {
                     $("#total_device_table").html(response); 
+                    setupCheckboxListeners();
                 }
                 else if(status=="INSTALLED")
                 {
                     $("#installed_device_list_table").html(response); 
+                    setupCheckboxListeners();
                 }
                 else
                 {
                     $("#not_installed_device_list_table").html(response); 
+                    setupCheckboxListeners();
                 }
 
             },
@@ -426,6 +429,62 @@ function select_devices(select_all_id, count_id) {
     });
     const allChecked = document.querySelectorAll('input[name="selectedDevice"]:checked').length;
     document.getElementById(count_id).textContent = allChecked;
+}
+
+function setupCheckboxListeners() {
+    // For total devices table
+    const totalCheckboxes = document.querySelectorAll('#total_device_table input[name="selectedDevice"]');
+    totalCheckboxes.forEach(checkbox => {
+        checkbox.removeEventListener('change', updateTotalCount); // Remove any existing event listeners
+        checkbox.addEventListener('change', updateTotalCount);
+    });
+    
+    // For installed devices table
+    const installedCheckboxes = document.querySelectorAll('#installed_device_list_table input[name="selectedDevice"]');
+    installedCheckboxes.forEach(checkbox => {
+        checkbox.removeEventListener('change', updateInstalledCount); // Remove any existing event listeners
+        checkbox.addEventListener('change', updateInstalledCount);
+    });
+    
+    // For not installed devices table
+    const uninstalledCheckboxes = document.querySelectorAll('#notinstalledDeviceTable input[name="selectedDevice"]');
+    uninstalledCheckboxes.forEach(checkbox => {
+        checkbox.removeEventListener('change', updateUninstalledCount);
+        checkbox.addEventListener('change', updateUninstalledCount);
+    });
+}
+
+// Functions to update counts for each table
+function updateTotalCount() {
+    const allCheckboxes = document.querySelectorAll('#total_device_table input[name="selectedDevice"]');
+    const checkedCheckboxes = document.querySelectorAll('#total_device_table input[name="selectedDevice"]:checked');
+    
+    document.getElementById('selected_count-total').textContent = checkedCheckboxes.length;
+    document.getElementById('selectAll-total').checked = (checkedCheckboxes.length === allCheckboxes.length && allCheckboxes.length > 0);
+}
+
+function updateInstalledCount() {
+    const allCheckboxes = document.querySelectorAll('#installed_device_list_table input[name="selectedDevice"]');
+    const checkedCheckboxes = document.querySelectorAll('#installed_device_list_table input[name="selectedDevice"]:checked');
+    
+    document.getElementById('selected_count-installed').textContent = checkedCheckboxes.length;
+    document.getElementById('selectAll-installed').checked = (checkedCheckboxes.length === allCheckboxes.length && allCheckboxes.length > 0);
+}
+
+function updateUninstalledCount() {
+    const allCheckboxes = document.querySelectorAll('#notinstalledDeviceTable input[name="selectedDevice"]');
+    const checkedCheckboxes = document.querySelectorAll('#notinstalledDeviceTable input[name="selectedDevice"]:checked');
+
+    const countElement = document.getElementById('selected_count-uninstalled');
+    const selectAllCheckbox = document.getElementById('selectAll-uninstalled');
+
+    if (countElement) {
+        countElement.textContent = checkedCheckboxes.length;
+
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = (checkedCheckboxes.length === allCheckboxes.length && allCheckboxes.length > 0);
+        }
+    }
 }
 
 function check_uncheck_fun(element) {

@@ -24,9 +24,9 @@ group_list.addEventListener('change', function () {
 
     }
 });
-
+var interval_Id;
 //setTimeout(refresh_data, 50);
-setInterval(refresh_data, 20000);
+interval_Id=setInterval(refresh_data, 60000);
 function refresh_data() {
     /*if (typeof update_frame_time === "function") {
         device_id = document.getElementById('device_id').value;
@@ -40,6 +40,7 @@ function refresh_data() {
 
 
 function add_device_list(group_id) {
+    console.log(group_id);
     if (group_id !== "" && group_id !== null) {
 
         $.ajax({

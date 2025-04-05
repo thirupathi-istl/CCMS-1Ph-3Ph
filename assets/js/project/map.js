@@ -13,7 +13,10 @@
   		map: map
   	});
   }*/
-
+function initMap()
+{
+	
+}
 var loc_lat="17.890307";
 var loc_long="79.863593";
 var zoom_level=7;

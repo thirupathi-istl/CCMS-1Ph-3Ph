@@ -199,7 +199,7 @@ function update_all_group_data_table(){
 		success: function(response) {
 			$("#pre-loader").css('display', 'none');
 			$("#frame_data_table_header").html("");
-
+				console.log(response[1]);
 			 if(response[1]=="1PH"){
 				
 				$("#frame_data_table_header").html('<tr class="header-row-1"> <th class="table-header-row-1"></th> <th class="table-header-row-1 col-size-1" >Updated at</th> <th class="table-header-row-1">ON/OFF Status</th> <th class="table-header-row-1">Load</th> <th class="table-header-row-1" colspan="1">Voltages (Volts)</th> <th class="table-header-row-1" colspan="1">Currents (Amps)</th> <th class="table-header-row-1" colspan="1">KW</th> <th class="table-header-row-1" colspan="1">KVA</th> <th class="table-header-row-1" colspan="2">Energy (Units)</th> <th class="table-header-row-1" colspan="1">Power Factor</th> <th class="table-header-row-1" colspan="1">Frequency (Hz)</th> <th class="table-header-row-1">Battery</th> <th class="table-header-row-1">Signal Level</th><th class="table-header-row-1">Location</th> </tr> <tr class="header-row-2"> <th class="table-header-row-2">Device Id</th> <th class="table-header-row-2"></th> <th class="table-header-row-2"></th> <th class="table-header-row-2">Status</th> <th class="table-header-row-2"></th> <th class="table-header-row-2"></th> <th class="table-header-row-2">Total</th> <th class="table-header-row-2">Total</th> <th class="table-header-row-2">kWh</th> <th class="table-header-row-2">kVAh</th> <th class="table-header-row-2"></th> <th class="table-header-row-2"></th> <th class="table-header-row-2">Voltage(mV)</th> <th class="table-header-row-2"></th>  <th class="table-header-row-2"></th> </tr>');
