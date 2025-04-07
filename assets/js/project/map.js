@@ -17,9 +17,10 @@ function initMap()
 {
 	
 }
+
 var loc_lat="17.890307";
 var loc_long="79.863593";
-var zoom_level=7;
+let zoom_level=7;
 var user_map="";
 var group="";
 var modal_event=0;
@@ -48,7 +49,8 @@ function gps_initMaps(group_name) {
 			dataType: "json", 
 			success:  function(data){
 				$("#loader").css('display', 'none');
-				on_success(data);
+				on_success(data[0], data[1]);
+				
 			},
 			failure: function (response) {
 				alert(response.responseText);
@@ -59,7 +61,7 @@ function gps_initMaps(group_name) {
 		});
 	});
 }
-function on_success(data)
+function on_success(data, location)
 {
 	var json = data;
 	locations = [];
@@ -72,7 +74,27 @@ function on_success(data)
 	}
 	if(group_name=="ALL")
 	{
-		zoom_level=5;
+		
+		if(location=="NANDYALA")
+		{
+			loc_lat="15.488651";
+			loc_long="78.470370";
+			zoom_level=13;
+
+		}
+		else if(location=="KHAMMAM")
+		{
+			loc_lat="15.488651";
+			loc_long="78.470370";
+			zoom_level=13;
+
+		}
+		
+		else
+		{
+			zoom_level=5;
+		}
+
 	}
 	else
 	{
@@ -91,8 +113,10 @@ function on_success(data)
 			}
 
 		}
-		zoom_level=12;
+		zoom_level=14;
 	}
+
+	console.log(zoom_level)
 
 	var map = new google.maps.Map(document.getElementById('map'), {
 		zoom: zoom_level,

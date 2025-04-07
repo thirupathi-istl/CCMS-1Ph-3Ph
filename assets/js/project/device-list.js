@@ -26,7 +26,9 @@ group_list.addEventListener('change', function () {
 });
 var interval_Id;
 //setTimeout(refresh_data, 50);
+
 interval_Id=setInterval(refresh_data, 60000);
+
 function refresh_data() {
     /*if (typeof update_frame_time === "function") {
         device_id = document.getElementById('device_id').value;

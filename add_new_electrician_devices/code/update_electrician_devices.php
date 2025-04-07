@@ -16,13 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["device_ids"])) {
         echo json_encode(["status" => "error", "message" => "Database connection failed."]);
         exit;
     }
+
     function sanitize_input($data, $conn) {
         $data = trim($data);
         $data = stripslashes($data);
         $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
         return mysqli_real_escape_string($conn, $data);
     }
-    
 
     $electrician_name = sanitize_input($_POST['electrician_name'], $conn);
     $electrician_phone = sanitize_input($_POST['electrician_phone'], $conn);
@@ -36,57 +36,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["device_ids"])) {
         exit;
     }
 
-    // Check if the electrician already exists
+    // Check if electrician exists
     $check_query = "SELECT id FROM electricians_list WHERE phone_number = ? AND name = ?";
-    $stmt = $conn->prepare($check_query);
-    $stmt->bind_param("ss", $electrician_phone, $electrician_name);
-    $stmt->execute();
-    $stmt->bind_result($electrician_id);
-    $stmt->fetch();
-    $stmt->close();
+    $stmt = mysqli_prepare($conn, $check_query);
+    mysqli_stmt_bind_param($stmt, "ss", $electrician_phone, $electrician_name);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $electrician_id);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
 
     if ($electrician_id) {
         echo json_encode(["status" => "error", "message" => "Electrician already exists."]);
         exit;
     }
 
-    // Fetch group_id for the given device_ids
+    // Fetch group_area for the device
     $placeholders = implode(',', array_fill(0, count($device_ids), '?'));
     $fetch_group_sql = "SELECT device_group_or_area FROM user_device_group_view WHERE device_id IN ($placeholders) LIMIT 1";
-    $stmt = $conn->prepare($fetch_group_sql);
-    $stmt->bind_param(str_repeat('s', count($device_ids)), ...$device_ids);
-    $stmt->execute();
-    $stmt->bind_result($fetched_group_id);
-    $stmt->fetch();
-    $stmt->close();
-    
+    $stmt = mysqli_prepare($conn, $fetch_group_sql);
+    $types = str_repeat('s', count($device_ids));
+    mysqli_stmt_bind_param($stmt, $types, ...$device_ids);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $fetched_group_id);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+
     $group_area = $fetched_group_id;
 
-    // Insert new electrician into electricians_list
+    // Insert into electricians_list
     $insert_query = "INSERT INTO electricians_list (name, phone_number, group_area, user_login_id) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($insert_query);
-    $stmt->bind_param("ssss", $electrician_name, $electrician_phone, $group_area, $user_login_id);
-    
-    if ($stmt->execute()) {
-        $electrician_id = $stmt->insert_id;
+    $stmt = mysqli_prepare($conn, $insert_query);
+    mysqli_stmt_bind_param($stmt, "ssss", $electrician_name, $electrician_phone, $group_area, $user_login_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        $electrician_id = mysqli_insert_id($conn);
     } else {
         echo json_encode(["status" => "error", "message" => "Failed to add electrician."]);
+        mysqli_stmt_close($stmt);
+        mysqli_close($conn);
         exit;
     }
-    $stmt->close();
+    mysqli_stmt_close($stmt);
 
-    // Insert into electrician_devices table for each selected device
+    // Assign electrician to devices
     $query = "INSERT INTO electrician_devices (electrician_name, phone_number, device_id, group_area, user_login_id) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-    
+    $stmt = mysqli_prepare($conn, $query);
+
     foreach ($device_ids as $device_id) {
-        $stmt->bind_param("sssss", $electrician_name, $electrician_phone, $device_id, $group_area, $user_login_id);
-        if (!$stmt->execute()) {
+        mysqli_stmt_bind_param($stmt, "sssss", $electrician_name, $electrician_phone, $device_id, $group_area, $user_login_id);
+        if (!mysqli_stmt_execute($stmt)) {
             echo json_encode(["status" => "error", "message" => "Failed to assign electrician to device."]);
+            mysqli_stmt_close($stmt);
+            mysqli_close($conn);
             exit;
         }
     }
-    $stmt->close();
+
+    mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
     echo json_encode(["status" => "success", "message" => "Electrician added successfully."]);

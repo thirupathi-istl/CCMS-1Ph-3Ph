@@ -1019,7 +1019,7 @@ function addSelectedDevices() {
         alert("Invalid User ID. Please try again.");
         return;  // Stop the function if the userId is not a valid number
       }
-
+console.log(selectedMenuPermissions);
       if (confirm('Are you sure you want to update the user menu Permissions?')) {
         $("#pre-loader").css('display', 'block');
         $.ajax({

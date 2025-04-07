@@ -5,7 +5,7 @@
 
 	<ul class="nav nav-pills flex-column mb-auto">
 
-		<?php if (hasPermission('dashboard', $menu_list)): ?>
+		<?php if (hasPermission('device_dashboard', $menu_list)): ?>
 			<li>
 				<a href="index.php" class="nav-link link-body-emphasis" aria-current="page">
 					<i class="bi bi-lightbulb"></i>
@@ -58,8 +58,20 @@
 				</a>
 			</li>
 		<?php endif; ?>
+		
+		<?php if (hasPermission('energy_consumption', $menu_list)): ?>
+			<li>
+				<a href="energy-consumption.php" class="nav-link link-body-emphasis">
+					<i class="bi bi-calculator"></i>
+					Energy Consumption
+				</a>
+			</li>
+		<?php endif; ?>
 
-		<?php if (hasPermission('thresholdsettings', $menu_list) || hasPermission('group_creation', $menu_list) || hasPermission('location_update', $menu_list) || hasPermission('notification_settings', $menu_list) || hasPermission('iotsettings', $menu_list) || hasPermission('pending_actions', $menu_list)): ?>
+
+
+
+		<?php if (hasPermission('thresholdsettings', $menu_list) || hasPermission('group_creation', $menu_list) || hasPermission('location_update', $menu_list) || hasPermission('notification_settings', $menu_list) || hasPermission('iotsettings', $menu_list) || hasPermission('pending_actions', $menu_list) || hasPermission('add_new_electrician_devices', $menu_list) ): ?>
 			<li>
 				<a href="#" class="nav-link btn-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">
 					<i class="bi bi-gear"></i>
@@ -85,7 +97,7 @@
 						<?php if (hasPermission('pending_actions', $menu_list)): ?>
 							<li><a href="pending-actions.php" class="nav-link link-body-emphasis d-inline-flex text-decoration-none rounded"><i class="bi bi-arrow-return-right"></i>Pending Actions</a></li>
 						<?php endif; ?>
-						<?php if (hasPermission('thresholdsettings', $menu_list)): ?>
+						<?php if (hasPermission('add_new_electrician_devices', $menu_list)): ?>
 							<li><a href="add-new-electrician-devices.php" class="nav-link link-body-emphasis d-inline-flex text-decoration-none rounded"><i class="bi bi-arrow-return-right"></i>Add Electrician Devices </a></li>
 						<?php endif; ?>
 					</ul>
