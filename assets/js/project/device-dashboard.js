@@ -16,10 +16,9 @@ if (group_name !== "" && group_name !== null) {
     $("#pre-loader").css('display', 'block');
 }
 
-function initMap()
-{
-	
-} 
+function initMap() {
+
+}
 let group_list = document.getElementById('group-list');
 
 group_list.addEventListener('change', function () {
@@ -137,7 +136,7 @@ function initializeLoadCard(data) {
     const cumulativeValue = parseFloat(data.cumulativeLoad) / 1000;
     const installedValue = parseFloat(data.installedLoad) / 1000;
     let nonActiveValue = parseFloat(data.inactiveLoad) / 1000;
-
+   
 
     // Ensure the values are valid numbers
     if (isNaN(cumulativeValue) || isNaN(installedValue) || isNaN(nonActiveValue)) {
@@ -159,23 +158,24 @@ function initializeLoadCard(data) {
         // nonActiveValue=0-nonActiveValue;
 
         inactiveLoadContainer.innerHTML = `
-          <!-- OverConsumption Alert Card -->
-        <div class="p-2 bg-danger bg-opacity-10 border border-danger rounded d-flex flex-column align-items-center justify-content-center h-90 text-center w-100">
-            <div class="d-flex align-items-center flex-wrap text-center">
-                <h4 id="active-load" class="text-danger mb-0 me-2 text-break">${-nonActiveValue}</h4>
-                <a tabindex="0" role="button"
-                class="text-danger"
-                id="info-icon"
-                data-bs-toggle="tooltip"
-                data-bs-placement="top"
-                title="Power Theft Detected!">
-                    <i class="bi bi-info-circle"></i>
-                </a>
-            </div>
-            <small class="mt-1 text-danger text-wrap w-100">OverLoad</small> 
+        <div class="p-2 bg-danger bg-opacity-10 border border-danger rounded d-flex flex-column align-items-center justify-content-center h-100 text-center w-100">
+          <div class="d-flex align-items-center flex-wrap justify-content-center">
+            <h4 id="active-load" class="text-danger mb-0 me-2 text-break">${-nonActiveValue}</h4>
+            <a tabindex="0" role="button"
+              class="text-danger"
+              id="info-icon"
+              data-bs-container="body"
+              data-bs-toggle="popover"
+              data-bs-placement="top"
+              data-bs-content="Power Theft Detected!"
+              data-bs-trigger="click">
+              <i class="bi bi-info-circle"></i>
+            </a>
+          </div>
+          <small class="mt-1 text-danger text-wrap w-100">OverLoad</small> 
         </div>
+      `;
 
-        `;
 
         // Attach an event listener to show an alert message when clicked
 
@@ -183,6 +183,17 @@ function initializeLoadCard(data) {
         // Set chart to 100% active (avoid negative inactive values)
         activePercentage = 100;
         inactivePercentage = 0;
+        const popoverTrigger = document.querySelector("#info-icon");
+        if (popoverTrigger) {
+            const popover = new bootstrap.Popover(popoverTrigger);
+
+            // Close popover when clicking elsewhere
+            document.addEventListener("click", function (event) {
+                if (!popoverTrigger.contains(event.target) && !event.target.closest('.popover')) {
+                    popover.hide();
+                }
+            });
+        }
     } else {
         // Normal case: show inactive load
         inactiveLoadContainer.innerHTML = `
@@ -231,46 +242,10 @@ function initializeLoadCard(data) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    var tooltipTrigger = document.querySelector("#info-icon"); // Select the icon
-    var tooltip = new bootstrap.Tooltip(tooltipTrigger, {
-        trigger: "click", // Show tooltip only on click
-    });
-
-    // Hide tooltip when clicking outside
-    document.addEventListener("click", function (event) {
-        if (!tooltipTrigger.contains(event.target)) {
-            tooltip.hide();
-        }
-    });
-});
 
 
 
 
-// Updates Panel
-function initializeUpdatesPanel(updates) {
-    const container = document.getElementById('updates-container');
-    if (!container) return;
-
-    updates.forEach(update => {
-        const updateItem = document.createElement('div');
-        updateItem.className = `update-item update-${update.type}`;
-
-        updateItem.innerHTML = `
-            <div class="update-icon">
-                <i class="fas ${update.icon} ${update.type === 'warning' ? 'text-warning' :
-                update.type === 'success' ? 'text-success' : 'text-primary'}"></i>
-            </div>
-            <div class="update-content">
-                <div class="update-message">${update.message}</div>
-                <div class="update-timestamp">${update.timestamp}</div>
-            </div>
-        `;
-
-        container.appendChild(updateItem);
-    });
-}
 
 // Helper function to create chart options
 function createChartOptions(title) {
@@ -301,7 +276,7 @@ function createChartOptions(title) {
     };
 }
 function update_switchPoints_status(group_id) {
-  
+
     $.ajax({
         type: "POST", // Method type
         url: "../dashboard/code/switchpoint_details.php", // PHP script URL
@@ -368,7 +343,7 @@ function update_switchPoints_status(group_id) {
             $('#active_load').css('width', activeLoadPercentage + '%');
             $('#active_load').attr('aria-valuenow', activeLoadPercentage);
             $('#active_load').text('Active - ' + activeLoad);
-           
+
             const lightsData = {
                 total: totalLights,
                 onPercentage: onLights,

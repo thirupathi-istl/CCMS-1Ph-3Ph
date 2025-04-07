@@ -48,6 +48,7 @@ document.getElementById('items-per-page').addEventListener('change', function ()
 });
 
 function add_sim_list(group_id, currentPage = 1, itemsPerPage = 100) {
+
     if (group_id !== "" && group_id !== null) {
         $.ajax({
             type: "POST",

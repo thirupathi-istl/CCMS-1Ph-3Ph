@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     } else {
-        $sql_lights = "SELECT * FROM $central_db.`alerts_and_updates` WHERE device_id IN ($user_devices) ORDER BY id DESC limit 100";
+        $sql_lights = "SELECT * FROM $central_db.`main_alerts_and_updates` WHERE device_id IN ($user_devices) ORDER BY id DESC limit 100";
 
         if ($result = mysqli_query($conn, $sql_lights)) {
             if (mysqli_num_rows($result) > 0) {
@@ -45,16 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["GROUP_ID"])) {
                     $device_id_name = $rl['device_id_name'];
                     $update = $rl['update'];
                     $date_time = $rl['date_time'];
-                    
-                    $sql_electrician = "SELECT electrician_name, phone_number FROM $users_db.`electrician_devices` WHERE device_id = '$device_id' LIMIT 1";
-                    $electrician_result = mysqli_query($conn, $sql_electrician);
-                    $electrician_name = '';
-                    $phone_number = '';
-                    if ($electrician_row = mysqli_fetch_assoc($electrician_result)) {
-                        $electrician_name = $electrician_row['electrician_name'];
-                        $phone_number = $electrician_row['phone_number'];
-                    }
-                    mysqli_free_result($electrician_result);
+                    $electrician_name = $rl['electrician_name'];
+                    $phone_number = $rl['electrician_phone_number'];
+
+                   
 
                     $return_response .= '<div class="alert-item list-group-item">
                         <div class="device-header">

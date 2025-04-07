@@ -23,7 +23,7 @@ SessionManager::checkSession();
         }
 
         .updates-container {
-            max-height: 700px;
+            max-height: 800px;
             overflow-y: auto;
         }
 
@@ -116,7 +116,7 @@ SessionManager::checkSession();
             }
         }
 
-        
+
 
         .map-container {
             height: 400px;
@@ -158,7 +158,7 @@ SessionManager::checkSession();
                                 </div>
 
 
-                                <div class="card-body d-flex flex-column pointer">
+                                <div class="card-body d-flex flex-column ">
                                     <div class="text-center mb-3">
                                         <h2 id="total-lights">1250</h2>
                                         <p class="text-muted mb-3">Total Lights Installed</p>
@@ -229,20 +229,24 @@ SessionManager::checkSession();
                                 </div>
 
 
-                                <div class="card-body d-flex flex-column pointer">
+                                <div class="card-body d-flex flex-column ">
                                     <div class="text-center mb-3">
                                         <h2 id="cumulative-load"></h2>
                                         <p class="text-muted mb-3">Installed Load</p>
                                         <div class="row g-2">
-                                            <div class="col-6">
-                                                <div class="p-2 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-90 text-center">
+                                            <!-- Active Load -->
+                                            <div class="col-12 col-md-6">
+                                                <div class="p-2 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-100 text-center">
                                                     <div>
                                                         <h4 id="installed-load" class="text-primary mb-0"></h4>
                                                         <small>Active Load</small>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-6" id="inactive-load-container">
+
+                                            <!-- Inactive Load -->
+                                            <div class="col-12 col-md-6" id="inactive-load-container">
+                                                <!-- Content injected by JS -->
                                                 <div class="p-2 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-100 text-center">
                                                     <div>
                                                         <h4 id="active-load" class="text-secondary mb-0"></h4>
@@ -251,6 +255,7 @@ SessionManager::checkSession();
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                     <div class="chart-container mt-auto">
                                         <canvas id="load-chart"></canvas>
@@ -299,15 +304,15 @@ SessionManager::checkSession();
             </div>
         </div>
     </div>
-</div>
+    </div>
 
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Custom JavaScript -->
-<?php
-include(BASE_PATH . "dashboard/dashboard_modals.php");
-?>
+    <!-- Custom JavaScript -->
+    <?php
+    include(BASE_PATH . "dashboard/dashboard_modals.php");
+    ?>
 </body>
 
 </html>

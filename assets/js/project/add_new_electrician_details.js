@@ -73,8 +73,12 @@ function fetchDeviceList1(group_name) {
 }
 
 
-setInterval(refresh_data, 20000);
+var interval_Id;
+//setTimeout(refresh_data, 50);
+
+interval_Id=setInterval(refresh_data, 60000);
 function refresh_data() {
+   
     let group_name = document.getElementById('group-list').value;
     if (group_name !== "" && group_name !== null) {
         fetchDeviceList(group_name);
@@ -89,7 +93,7 @@ function submitElectricianForm1() {
     let selectedDevices = $("#multi_selection_device_id1").val() || [];
     let group_name = document.getElementById('group-list').value;
 
-   
+
 
     if (!selectedElectrician || selectedDevices.length === 0) {
         $("#response-message-new").html('<div class="text-danger">Please select an electrician and devices.</div>');
@@ -198,9 +202,12 @@ function fetchElectrician_details(group_name) {
                         </option>`
                     );
                 });
+                updateElectricionListTable(data);
+
             } else {
                 console.error("Invalid data format received.");
             }
+
         },
         error: function (xhr, status, error) {
             console.error("Error fetching electricians:", error);
@@ -215,6 +222,113 @@ $("#electrician_list").change(function () {
     }
 });
 
+
+function updateElectricionListTable(data) {
+    let tableHTML = `<table class="table text-center table-bordered w-100 SimListSearch">
+        <thead>
+            <tr>
+                <th class="table-header1-row-1" style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <input type="checkbox" id="select_all_electricians_list" style="transform: scale(0.9);" />
+                        <span>All</span>
+                    </div>
+                </th>
+                <th class="table-header1-row-1" >Electrician Name</th>
+                <th class="table-header1-row-1">Phone</th>
+                <th class="table-header1-row-1">Actions</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    if (Array.isArray(data)) {
+        data.forEach(electrician => {
+            tableHTML += `<tr>
+                <td style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
+                    <input type="checkbox" class="row-checkbox-list" value="${electrician.id}" style="transform: scale(0.9);" />
+                </td>
+                <td>${electrician.name}</td>
+                <td>${electrician.phone}</td>
+                <td>
+                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                        <button class="btn btn-danger btn-sm remove-access" onclick="removeElectrician(${electrician.id}, '${electrician.name}', '${electrician.phone}')">Remove</button>
+                      
+                    </div>
+                </td>
+            </tr>`;
+        });
+    } else {
+        tableHTML += `<tr><td colspan="4" class="text-center">No electricians assigned to this group.</td></tr>`;
+    }
+
+    tableHTML += `</tbody></table>`;
+    document.getElementById("electricianList").innerHTML = tableHTML;
+
+    setupCheckboxListenersList();
+}
+
+function toggleRemoveAllButtonList() {
+    const selectedCount = document.querySelectorAll(".row-checkbox-list:checked").length;
+    document.getElementById("remove_button").disabled = selectedCount === 0;
+}
+
+function setupCheckboxListenersList() {
+    const selectAll = document.getElementById("select_all_electricians_list");
+    const checkboxes = document.querySelectorAll(".row-checkbox-list");
+
+    selectAll.addEventListener("change", function () {
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        toggleRemoveAllButtonList();
+    });
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+            selectAll.checked = document.querySelectorAll(".row-checkbox-list:checked").length === checkboxes.length;
+            toggleRemoveAllButtonList();
+        });
+    });
+}
+
+function removeElectrician(electricianId, electricianName, electricianPhone) {
+    if (confirm("Are you sure you want to remove  electrician and his access from Devices?")) {
+        fetch("../add_new_electrician_devices/code/remove_electrician.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `electrician_id=${encodeURIComponent(electricianId)}&electricianName=${encodeURIComponent(electricianName)}&electricianPhone=${encodeURIComponent(electricianPhone)}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                refresh_data();
+                toggleRemoveAllButtonList(); // Disable the button after refresh
+
+            })
+            .catch(error => console.error("Error removing electrician:", error));
+    }
+}
+
+function RemoveAllElectricions() {
+    const selectedIds = Array.from(document.querySelectorAll(".row-checkbox-list:checked"))
+        .map(cb => parseInt(cb.value));
+
+    if (selectedIds.length === 0) return;
+
+    if (confirm("Are you sure you want to remove all selected electricians?")) {
+        fetch("../add_new_electrician_devices/code/remove_electrician.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `electrician_ids=${encodeURIComponent(JSON.stringify(selectedIds))}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                refresh_data();
+                toggleRemoveAllButtonList(); // Disable the button after refresh
+
+
+            })
+            .catch(err => console.error("Error removing electricians:", err));
+    }
+}
 
 function fetchElectricianDevices(electrician_name) {
     $.ajax({
@@ -460,27 +574,27 @@ document.addEventListener("DOMContentLoaded", function () {
 // });
 
 
-function fetchElectricians(group_id) {
+// function fetchElectricians(group_id) {
 
-    // let group_id = document.getElementById('group-list').value; // Correct variable name
+//     // let group_id = document.getElementById('group-list').value; // Correct variable name
 
-    if (group_id) {
-        $.ajax({
-            type: "POST",
-            url: "../add_new_electrician_devices/code/fetch_electricians_by_device.php",
-            data: { group_id: group_id },
-            dataType: "json",
-            success: function (data) {
-                updateElectricianTable(data); // Correct function call
-            },
-            error: function (xhr, status, error) {
-                console.error("Error fetching electricians:", error);
-            }
-        });
-    } else {
-        // document.getElementById("electrician_Names").innerHTML = "";
-    }
-}
+//     if (group_id) {
+//         $.ajax({
+//             type: "POST",
+//             url: "../add_new_electrician_devices/code/fetch_electricians_by_device.php",
+//             data: { group_id: group_id },
+//             dataType: "json",
+//             success: function (data) {
+//                 updateElectricianTable(data); // Correct function call
+//             },
+//             error: function (xhr, status, error) {
+//                 console.error("Error fetching electricians:", error);
+//             }
+//         });
+//     } else {
+//         // document.getElementById("electrician_Names").innerHTML = "";
+//     }
+// }
 
 // function updateElectricianTable(data) {
 //     let tableHTML = `<table class="table text-center table-bordered  w-100 SimListSearch">
@@ -548,30 +662,138 @@ function fetchElectricians(group_id) {
 //     tableHTML += `</tbody></table>`;
 //     document.getElementById("electricianTable").innerHTML = tableHTML;
 // }
+let currentPage = 1;
+let itemsPerPage = 100;
+let electriciansData = [];
+
+// Update the fetchElectricians function to store the data globally
+function fetchElectricians(group_id) {
+    if (group_id) {
+        $.ajax({
+            type: "POST",
+            url: "../add_new_electrician_devices/code/fetch_electricians_by_device.php",
+            data: { group_id: group_id },
+            dataType: "json",
+            success: function (data) {
+                electriciansData = data.electricians || []; // Store data globally
+                currentPage = 1; // Reset to first page on new data
+                updateElectricianTable(data);
+                setupPagination();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching electricians:", error);
+            }
+        });
+    }
+}
+
+// Function to set up pagination
+function setupPagination() {
+    const totalItems = electriciansData.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // Update pagination controls
+    const paginationEl = document.getElementById('pagination');
+    let paginationHTML = '';
+    
+    // Previous button
+    paginationHTML += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Previous</a>
+        </li>
+    `;
+    
+    // Page numbers
+    const maxPages = 5; // Maximum number of page links to show
+    let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+    let endPage = Math.min(totalPages, startPage + maxPages - 1);
+    
+    if (endPage - startPage + 1 < maxPages) {
+        startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+            <li class="page-item ${currentPage === i ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+            </li>
+        `;
+    }
+    
+    // Next button
+    paginationHTML += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Next</a>
+        </li>
+    `;
+    
+    paginationEl.innerHTML = paginationHTML;
+    
+    // Update items per page dropdown event listener
+    document.getElementById('items-per-page').addEventListener('change', function() {
+        itemsPerPage = parseInt(this.value);
+        currentPage = 1; // Reset to first page when changing items per page
+        renderCurrentPage();
+        setupPagination();
+    });
+}
+
+// Function to change the current page
+function changePage(newPage) {
+    const totalPages = Math.ceil(electriciansData.length / itemsPerPage);
+    
+    if (newPage >= 1 && newPage <= totalPages) {
+        currentPage = newPage;
+        renderCurrentPage();
+        setupPagination();
+    }
+    
+    return false; // Prevent default action
+}
+
+// Function to render the current page data
+function renderCurrentPage() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, electriciansData.length);
+    
+    const pageData = electriciansData.slice(startIndex, endIndex);
+    
+    // Create paged data object to pass to updateElectricianTable
+    const pagedData = {
+        electricians: pageData,
+        unassigned_devices: [] // Keep the unassigned devices as is
+    };
+    
+    updateElectricianTable(pagedData);
+}
+
+// Update the updateElectricianTable function for pagination
 function updateElectricianTable(data) {
-    let tableHTML = `<table class="table text-center table-bordered w-100 SimListSearch">
-                        <thead>
-                            <tr>
-                                <th class="table-header1-row-1" style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
-                                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                                        <input type="checkbox" id="select_all_electricians" style="transform: scale(0.9); margin: 0;" />
-                                        <span>All</span>
-                                    </div>
-                                </th>
-                                <th class="table-header1-row-1">Device-ID</th>
-                                <th class="table-header1-row-1">Electrician Name</th>
-                                <th class="table-header1-row-1">Phone</th>
-                                <th class="table-header1-row-1">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
+    let tableHeader = `
+        <thead>
+            <tr>
+                <th class="table-header1-row-1" style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <input type="checkbox" id="select_all_electricians"  />
+                        <span>All</span>
+                    </div>
+                </th>
+                <th class="table-header1-row-1">Device-ID</th>
+                <th class="table-header1-row-1">Electrician Name</th>
+                <th class="table-header1-row-1">Phone</th>
+                <th class="table-header1-row-1">Actions</th>
+            </tr>
+        </thead>`;
+    
+    let tableBody = '<tbody>';
 
     // Render electricians table
     if (Array.isArray(data.electricians) && data.electricians.length > 0) {
         data.electricians.forEach(electrician => {
-            tableHTML += `<tr>
+            tableBody += `
+                <tr>
                     <td style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
-                        <input type="checkbox" class="row-checkbox" value="${electrician.id}" style="transform: scale(0.9); margin: 0 auto; display: block;" />
+                        <input type="checkbox" class="row-checkbox" value="${electrician.id}" />
                     </td>
                     <td>${electrician.device_id}</td>
                     <td>${electrician.name}</td>
@@ -590,15 +812,47 @@ function updateElectricianTable(data) {
                 </tr>`;
         });
     } else {
-        tableHTML += `<tr><td colspan="5" class="text-center">No electricians assigned to this group.</td></tr>`;
+        tableBody += '<tr><td colspan="5" class="text-center">No electricians assigned to this group.</td></tr>';
     }
 
-    tableHTML += `</tbody></table>`;
-    document.getElementById("electricianTable").innerHTML = tableHTML;
+    tableBody += '</tbody>';
+    
+    document.getElementById("electricianTable").innerHTML = tableHeader + tableBody;
+
+    // Update the count and range information
+    const total = electriciansData.length;
+    const start = total === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+    const end = Math.min(start + itemsPerPage - 1, total);
+    
+    // You can add this element to your HTML to show the range
+    // const rangeInfo = document.getElementById('range-info');
+    // if (rangeInfo) {
+    //     rangeInfo.textContent = `Showing ${start} to ${end} of ${total} entries`;
+    // }
 
     // Attach event listeners after table is updated
     setupCheckboxListeners();
 }
+
+// Add this function to initialize the items per page value from the dropdown
+function initializeItemsPerPage() {
+    const itemsPerPageSelect = document.getElementById('items-per-page');
+    if (itemsPerPageSelect) {
+        itemsPerPage = parseInt(itemsPerPageSelect.value);
+    }
+}
+
+// Add this to your document ready function
+$(document).ready(function() {
+    // Your existing code...
+    
+    // Initialize items per page value
+    initializeItemsPerPage();
+});
+
+
+
+
 
 
 
@@ -645,15 +899,32 @@ function removeSelectedElectricians() {
                 // Uncheck all checkboxes after deletion
                 document.querySelectorAll(".row-checkbox:checked").forEach(cb => cb.checked = false);
                 refresh_data(); // Refresh the table after deletion
-                
+
                 // Hide or disable the Remove All button
-               
+
             })
             .catch(error => console.error("Error removing electricians:", error));
     }
 }
 
-
+// function removeElectrician(electricianId) {
+//     // console.log(electricianId);
+//     if (confirm("Are you sure you want to remove access for this electrician?")) {
+//         fetch("../add_new_electrician_devices/code/remove_electrician.php", {
+//             method: "POST",
+//             headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//             body: `electrician_id=${electricianId}`
+//         })
+//             .then(response => response.json())
+//             .then(data => {
+//                 alert(data.message);
+//                 var group_id = document.getElementById('group-list').value;
+//                 refresh_data();
+//                 // fetchElectricians(group_id);
+//             })
+//             .catch(error => console.error("Error removing electrician:", error));
+//     }
+// }
 
 
 
@@ -767,16 +1038,28 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 // Function to filter the table based on search input
 // Function to filter the table based on the search input
+var interval_Id_1 =interval_Id ;
+
 function filterTable() {
+    clearInterval(interval_Id);
+
     let searchTerm = document.getElementById("searchBar").value.toLowerCase(); // Get the search term
     let table = document.getElementById("electricianTable");
     let rows = table.getElementsByTagName("tr");
+    
+    // Skip if there's no search term or no rows
+    if (!rows.length) return;
 
     // Loop through all table rows and hide those that don't match the search term
     for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
         let cells = rows[i].getElementsByTagName("td");
-        let deviceID = cells[0].textContent.toLowerCase();
-        let electricianName = cells[1].textContent.toLowerCase();
+        
+        // Make sure we have enough cells before accessing them
+        if (cells.length < 3) continue;
+        
+        // cells[1] is Device-ID, cells[2] is Electrician Name
+        let deviceID = cells[1].textContent.toLowerCase();
+        let electricianName = cells[2].textContent.toLowerCase();
 
         // Check if the search term matches either the device ID or the electrician name
         if (
@@ -789,12 +1072,26 @@ function filterTable() {
         }
     }
 }
-function validatePhoneNumber(input) {
-    // Remove any non-numeric characters
-    input.value = input.value.replace(/[^0-9]/g, '');
 
-    // Limit to 10 digits
-    if (input.value.length > 10) {
-        input.value = input.value.slice(0, 10);
+
+
+
+document.getElementById("searchBar").addEventListener("input", function () {
+   // Call the search function on every input change
+
+    // Restart the interval if input is cleared
+    if (this.value.trim() === "") {
+        // clearInterval(interval_Id); // Clear any existing interval
+        let group_list = document.getElementById('group-list');
+
+        let group_name = group_list.value;
+
+        refresh_data(group_name);
+
+        interval_Id1 = setInterval(refresh_data, 60000); // Restart interval
+
     }
-}
+});
+
+
+
