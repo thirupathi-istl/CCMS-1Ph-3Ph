@@ -201,13 +201,13 @@ SessionManager::checkSession();
                                             <div class="col-6">
                                                 <div class="p-2 bg-success bg-opacity-10 rounded cursor-pointer" onclick="activeModal()">
                                                     <h4 id="ccms-on" class="text-success-emphasis mb-0">38</h4>
-                                                    <small>Online</small>
+                                                    <small>Active</small>
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="p-2 bg-danger bg-opacity-10 rounded cursor-pointer" onclick="openNonActiveModal()">
                                                     <h4 id="ccms-off" class="text-danger mb-0">7</h4>
-                                                    <small>Offline</small>
+                                                    <small>InActive</small>
                                                 </div>
                                             </div>
                                         </div>

@@ -16,7 +16,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["device_id"], $_POST["
     if (!$conn) {
         die(json_encode(["status" => "error", "message" => "Database connection failed."]));
     }
+    $permission_query = "SELECT add_remove_electrician FROM `$users_db`.user_permissions WHERE login_id = ?";
+    $permission_stmt = mysqli_prepare($conn, $permission_query);
+    mysqli_stmt_bind_param($permission_stmt, "s", $user_login_id);
+    mysqli_stmt_execute($permission_stmt);
+    mysqli_stmt_bind_result($permission_stmt, $add_remove_electrician);
+    mysqli_stmt_fetch($permission_stmt);
+    mysqli_stmt_close($permission_stmt);
 
+    if ($add_remove_electrician != 1) {
+        echo json_encode(["status" => "error", "message" => "You do not have permission to Add or Remove electricians and Devices."]);
+        mysqli_close($conn);
+        exit();
+    }
     function sanitize_input($data, $conn) {
         $data = trim($data);
         $data = stripslashes($data);

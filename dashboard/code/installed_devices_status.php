@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             		if ($r['location'] != '0,0' && strpos($r['location'], "0000000,000000") === false) {
             			$address = '<a href="#" class="pt-0 pb-0" onclick="show_location(\'' . $r['location'] . '\')">Map</a>';
             		} else {
-            			$address = '<button class="address_update btn btn-primary pt-0 pb-0" onclick="address_update(\'' . $device_id . '\')">Update</button>';
+            			$address='<a href="location-details.php?id='.$device_id.'"  target="blank"><button class="btn btn-primary pt-0 pb-0" >Update</button></a>';
             		}
 
                     // Placeholder for $device_list (assuming it's properly populated elsewhere)
