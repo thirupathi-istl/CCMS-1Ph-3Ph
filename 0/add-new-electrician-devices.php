@@ -1,5 +1,3 @@
-
-
 <?php
 require_once 'config-path.php';
 require_once BASE_PATH . 'config_db/config.php';
@@ -140,14 +138,91 @@ $permission_check = 0;
                             <div class="row mt-2 d-flex justify-content-center">
                                 <div class="col-12">
                                     <!-- Search and Remove All -->
+                                    <div class="d-flex justify-content-end mb-3">
+                                        <div class="input-group w-auto">
+                                            <input type="text" id="searchBar" class="form-control" placeholder="Search by Device ID or Electrician Name" onkeyup="filterTable()" style="min-width: 300px;">
+                                            <button class="btn btn-primary" type="button" onclick="filterTable()">
+                                                <i class="bi bi-search"></i> Search
+                                            </button>
+                                            <button class="btn btn-danger ms-2" id="removeAllBtn" onclick="removeSelectedElectricians()" disabled>
+                                                Remove All
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+
+                                    <!-- Table -->
+                                    <div class="table-responsive w-100" style="height: 400px; overflow-y: auto;">
+                                        <table class="table table-bordered w-100" id="electricianTable">
+                                            <thead class="table-dark">
+                                                <!-- Dynamic Content Will Be Inserted Here -->
+                                            </thead>
+                                            <tbody>
+                                                <!-- Dynamic Content Will Be Inserted Here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="pagination-wrapper mt-2">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row g-2 align-items-center d-flex">
+                                                <div class="col-auto">
+                                                    <label for="items-per-page" class="form-label">Items per page:</label>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <select id="items-per-page" class="form-select">
+                                                        <option value="100" selected>100</option>
+                                                        <option value="200">200</option>
+                                                        <option value="300">300</option>
+                                                        <option value="500">500</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col">
+                                            <div class="pagination-container">
+                                                <nav>
+                                                    <ul class="pagination justify-content-end " id="pagination">
+                                                    </ul>
+                                                </nav>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <div class="card mt-3  d-flex flex-column">
+                        <div class="card-header bg-primary bg-opacity-25 fw-bold">
+                            <span class="me-2">Electrician List</span>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-title="Info" data-bs-content="Electrician List ">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                        </div>
+                        <div class="card-body flex-grow-1">
+                            <div class="row mt-2 d-flex justify-content-center">
+                                <div class="col-12">
+                                    <!-- Search and Remove All -->
                                     <div class="d-flex justify-content-end mb-3 gap-2">
-                                        <input type="text" id="searchBar" class="form-control w-25" placeholder="Search by Device ID or Electrician Name" onkeyup="filterTable()">
-                                        <button class="btn btn-danger" id="removeAllBtn" onclick="removeSelectedElectricians()" disabled>Remove All</button>
+                                        <!-- <input type="text" id="searchBar" class="form-control w-25" placeholder="Search by Device ID or Electrician Name" onkeyup="filterTable()"> -->
+                                        <button class="btn btn-danger" id="remove_button" onclick="RemoveAllElectricions()" disabled>Remove All</button>
+
+                                        <!-- <button class="btn btn-danger" id="addNewElectrician" onclick="addNewElectricion()" >Add New</button> -->
                                     </div>
 
                                     <!-- Table -->
                                     <div class="table-responsive w-100">
-                                        <table class="table table-bordered w-100" id="electricianTable">
+                                        <table class="table table-bordered w-100" id="electricianList">
                                             <thead class="table-dark">
                                                 <!-- Dynamic Content Will Be Inserted Here -->
                                             </thead>
@@ -165,12 +240,11 @@ $permission_check = 0;
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     </div>
     </div>
-    </main>
+
 
     <?php
     include(BASE_PATH . "devices/html/group-creation.php");
@@ -182,7 +256,6 @@ $permission_check = 0;
     <script src="<?php echo BASE_PATH; ?>js_modal_scripts/popover.js"></script>
 
     <script src="<?php echo BASE_PATH; ?>assets/js/sidebar-menu.js"></script>
-    <!-- <script src="<?php echo BASE_PATH; ?>assets/js/project/group_list_update.js"></script> -->
     <script src="<?php echo BASE_PATH; ?>assets/js/project/add_new_electrician_details.js"></script>
 
     <script src="<?php echo BASE_PATH; ?>json-data/json-data.js"></script>

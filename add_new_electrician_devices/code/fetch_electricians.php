@@ -10,8 +10,10 @@ $user_id = $sessionVars['user_id'];
 $role = $sessionVars['role'];
 $user_login_id = $sessionVars['user_login_id'];
 
+header('Content-Type: application/json');
+
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
-    $group_id = $_POST['group_id']; // Not used in query
+    $group_id = $_POST['group_id'];
 
     $conn = mysqli_connect(HOST, USERNAME, PASSWORD, DB_USER);
     if (!$conn) {
@@ -20,22 +22,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
 
     $electricians = [];
 
-    $sql = "SELECT DISTINCT name, phone_number FROM electricians_list WHERE user_login_id = ?";
-    $stmt = mysqli_prepare($conn, $sql);
+    if ($group_id === "ALL") {
+        $sql = "SELECT DISTINCT id,name, phone_number FROM electricians_list WHERE user_login_id = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "i", $user_login_id);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
 
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "i", $user_login_id);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+            while ($row = mysqli_fetch_assoc($result)) {
+                $electricians[] = [
+                    "id" => $row["id"],
+                    "name" => $row["name"],
+                    "phone" => $row["phone_number"]
+                ];
+            }
 
-        while ($row = mysqli_fetch_assoc($result)) {
-            $electricians[] = [
-                "name" => $row["name"],
-                "phone" => $row["phone_number"]
-            ];
+            mysqli_stmt_close($stmt);
         }
+    } else {
+        $sql = "SELECT DISTINCT id,name, phone_number FROM electricians_list WHERE group_area = ? AND user_login_id = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "si", $group_id, $user_login_id);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
 
-        mysqli_stmt_close($stmt);
+            while ($row = mysqli_fetch_assoc($result)) {
+                $electricians[] = [
+                    "id" => $row["id"],
+                    "name" => $row["name"],
+                    "phone" => $row["phone_number"]
+                ];
+            }
+
+            mysqli_stmt_close($stmt);
+        }
     }
 
     mysqli_close($conn);
@@ -43,4 +65,3 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
 } else {
     echo json_encode([]);
 }
-?>
