@@ -221,7 +221,7 @@ $permission_check = 0;
                                     </div>
 
                                     <!-- Table -->
-                                    <div class="table-responsive w-100">
+                                    <div class="table-responsive w-100"style="height: 400px; overflow-y: auto;">
                                         <table class="table table-bordered w-100" id="electricianList">
                                             <thead class="table-dark">
                                                 <!-- Dynamic Content Will Be Inserted Here -->

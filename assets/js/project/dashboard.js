@@ -58,8 +58,8 @@ function update_switchPoints_status(group_id){
             	$("#installed_lights").text(response.TOTAL_LIGHTS);
             	$("#installed_lights_on").text(response.ON_LIGHTS);
             	$("#installed_lights_off").text(response.OFF_LIGHT);
-            	$("#installed_load").text("Installed Lights Load = "+response.INSTALLED_LOAD);
-            	$("#active_load").text(response.ACTIVE_LOAD);
+                $("#installed_load").text("Installed Lights Load = " + (response.INSTALLED_LOAD / 1000).toFixed(3));
+                $("#active_load").text((response.ACTIVE_LOAD / 1000).toFixed(3));
             	$("#total_consumption_units").text(response.KWH);
             	$("#energy_saved_units").text(response.SAVED_UNITS);
             	$("#amount_saved").text(response.SAVED_AMOUNT);

@@ -9,11 +9,16 @@ $mobile_no = $sessionVars['mobile_no'];
 $user_id = $sessionVars['user_id'];
 $role = $sessionVars['role'];
 $user_login_id = $sessionVars['user_login_id'];
-
+$user_devices = "";
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
     $group_id = $_POST['group_id'];
+    include_once(BASE_PATH_1 . "common-files/selecting_group_device.php");
+
+    if ($user_devices != "") {
+        $user_devices = substr($user_devices, 0, -1);
+    }
 
     $conn = mysqli_connect(HOST, USERNAME, PASSWORD, DB_USER);
     if (!$conn) {
@@ -21,42 +26,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
     }
 
     $electricians = [];
+    $temp_data = [];
 
-    if ($group_id === "ALL") {
-        $sql = "SELECT DISTINCT id,name, phone_number FROM electricians_list WHERE user_login_id = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "i", $user_login_id);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
+    $sql = "SELECT DISTINCT electrician_name, phone_number FROM electrician_devices WHERE device_id IN ($user_devices)";
+    $result = mysqli_query($conn, $sql);
 
-            while ($row = mysqli_fetch_assoc($result)) {
-                $electricians[] = [
-                    "id" => $row["id"],
-                    "name" => $row["name"],
-                    "phone" => $row["phone_number"]
-                ];
-            }
-
-            mysqli_stmt_close($stmt);
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $temp_data[] = [
+                'name' => $row['electrician_name'],
+                'phone' => $row['phone_number']
+            ];
         }
-    } else {
-        $sql = "SELECT DISTINCT id,name, phone_number FROM electricians_list WHERE group_area = ? AND user_login_id = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "si", $group_id, $user_login_id);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
+    }
 
-            while ($row = mysqli_fetch_assoc($result)) {
-                $electricians[] = [
-                    "id" => $row["id"],
-                    "name" => $row["name"],
-                    "phone" => $row["phone_number"]
-                ];
-            }
+    // If we have electricians from electrician_devices, use their name and phone to fetch from electricians_list
+    foreach ($temp_data as $data) {
+        $name = mysqli_real_escape_string($conn, $data['name']);
+        $phone = mysqli_real_escape_string($conn, $data['phone']);
 
-            mysqli_stmt_close($stmt);
+        $query = "SELECT id, name, phone_number FROM electricians_list WHERE name = '$name' AND phone_number = '$phone' LIMIT 1";
+        $res = mysqli_query($conn, $query);
+        if ($res && mysqli_num_rows($res) > 0) {
+            $row = mysqli_fetch_assoc($res);
+            $electricians[] = [
+                "id" => $row["id"],
+                "name" => $row["name"],
+                "phone" => $row["phone_number"]
+            ];
         }
     }
 
@@ -65,3 +62,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
 } else {
     echo json_encode([]);
 }
+?>

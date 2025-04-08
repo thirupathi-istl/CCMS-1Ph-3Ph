@@ -10,6 +10,7 @@ $role = $sessionVars['role'];
 $user_login_id = $sessionVars['user_login_id'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["device_ids"])) {
+  
     $electrician_name = $_POST['electrician_name'];
     $electrician_phone = $_POST['electrician_phone'];
     $group_id = $_POST['group_id'];
@@ -25,7 +26,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["device_ids"])) {
         echo json_encode(["status" => "error", "message" => "Database connection failed."]);
         exit;
     }
+    $permission_query = "SELECT add_remove_electrician FROM `$users_db`.user_permissions WHERE login_id = ?";
+    $permission_stmt = mysqli_prepare($conn, $permission_query);
+    mysqli_stmt_bind_param($permission_stmt, "s", $user_login_id);
+    mysqli_stmt_execute($permission_stmt);
+    mysqli_stmt_bind_result($permission_stmt, $add_remove_electrician);
+    mysqli_stmt_fetch($permission_stmt);
+    mysqli_stmt_close($permission_stmt);
 
+    if ($add_remove_electrician != 1) {
+        echo json_encode(["status" => "error", "message" => "You do not have permission to Add or Remove electricians and Devices."]);
+        mysqli_close($conn);
+        exit();
+    }
     // Fetch group_id for the given device_ids
     $device_ids_placeholder = implode(',', array_fill(0, count($device_ids), '?'));
     $fetch_group_sql = "SELECT device_group_or_area FROM user_device_group_view WHERE device_id IN ($device_ids_placeholder) LIMIT 1";

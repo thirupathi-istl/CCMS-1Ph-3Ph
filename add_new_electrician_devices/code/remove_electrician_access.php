@@ -16,6 +16,19 @@ if (!$conn) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $permission_query = "SELECT add_remove_electrician FROM `$users_db`.user_permissions WHERE login_id = ?";
+    $permission_stmt = mysqli_prepare($conn, $permission_query);
+    mysqli_stmt_bind_param($permission_stmt, "s", $user_login_id);
+    mysqli_stmt_execute($permission_stmt);
+    mysqli_stmt_bind_result($permission_stmt, $add_remove_electrician);
+    mysqli_stmt_fetch($permission_stmt);
+    mysqli_stmt_close($permission_stmt);
+
+    if ($add_remove_electrician != 1) {
+        echo json_encode(["status" => "error", "message" => "You do not have permission to Add or Remove electricians and Devices."]);
+        mysqli_close($conn);
+        exit();
+    }
     if (isset($_POST["electrician_id"])) {
         $electrician_id = mysqli_real_escape_string($conn, $_POST["electrician_id"]);
         $sql = "DELETE FROM electrician_devices WHERE id = ?";
