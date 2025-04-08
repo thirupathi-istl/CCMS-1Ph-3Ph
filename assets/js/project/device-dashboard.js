@@ -115,7 +115,7 @@ function initializeCcmsCard(data) {
     ccmsChartInstance = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: ['Online', 'Offline'],
+            labels: ['Active', 'Inactive'],
             datasets: [{
                 data: [onPercentage, offPercentage],
                 backgroundColor: ['#198754', '#dc3545'], // Green for Online, Red for Offline

@@ -68,7 +68,7 @@
                                                             <div class="d-flex align-items-center">
                                                                 <label class="form-check-label" for="device_info_update"onclick="event.preventDefault();">Device Info Update</label>
                                                                 <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-title="Info"
-                                                                            data-bs-content="Allows the user to update the devices information such as Device Id/ Name, Location, Installation Date, Electrician Add /Remove" class="ms-2">
+                                                                            data-bs-content="Enables users to modify existing device details such as Device ID or Name, Location, and Installation Date." class="ms-2">
                                                                             <i class="bi bi-info-circle"></i>
                                                                         </a>
                                                             </div>
@@ -210,7 +210,7 @@
                                                         </div>
                                                         <hr class="my-2">';
                                                         $count++;
-                                                        $permissions .= "create_group, ";
+                                                        $permissions .= "add_remove_electrician, ";
                                                     }
                                                     if ($r['notification_update'] == 1) {
                                                         echo '<div class="d-flex justify-content-between align-items-center">
