@@ -16,7 +16,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["device_ids"])) {
         echo json_encode(["status" => "error", "message" => "Database connection failed."]);
         exit;
     }
+    $permission_query = "SELECT add_remove_electrician FROM `$users_db`.user_permissions WHERE login_id = ?";
+    $permission_stmt = mysqli_prepare($conn, $permission_query);
+    mysqli_stmt_bind_param($permission_stmt, "s", $user_login_id);
+    mysqli_stmt_execute($permission_stmt);
+    mysqli_stmt_bind_result($permission_stmt, $add_remove_electrician);
+    mysqli_stmt_fetch($permission_stmt);
+    mysqli_stmt_close($permission_stmt);
 
+    if ($add_remove_electrician != 1) {
+        echo json_encode(["status" => "error", "message" => "You do not have permission to Add / remove electricians and Devices."]);
+        mysqli_close($conn);
+        exit();
+    }
     function sanitize_input($data, $conn) {
         $data = trim($data);
         $data = stripslashes($data);
@@ -49,6 +61,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["device_ids"])) {
         echo json_encode(["status" => "error", "message" => "Electrician already exists."]);
         exit;
     }
+    $check_query1 = "SELECT phone_number FROM electricians_list WHERE phone_number = ? ";
+    $stmt1 = mysqli_prepare($conn, $check_query1);
+    mysqli_stmt_bind_param($stmt1, "s", $electrician_phone);
+    mysqli_stmt_execute($stmt1);
+    mysqli_stmt_bind_result($stmt1, $electrician_number);
+    mysqli_stmt_fetch($stmt1);
+    mysqli_stmt_close($stmt1);
+
+    if ($electrician_number) {
+        echo json_encode(["status" => "error", "message" => "Phone Number Already Exists."]);
+        exit;
+    }
+
 
     // Fetch group_area for the device
     $placeholders = implode(',', array_fill(0, count($device_ids), '?'));

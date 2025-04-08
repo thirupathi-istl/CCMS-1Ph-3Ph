@@ -257,7 +257,7 @@ function updateElectricionListTable(data) {
             </tr>`;
         });
     } else {
-        tableHTML += `<tr><td colspan="4" class="text-center">No electricians assigned to this group.</td></tr>`;
+        tableHTML += `<tr><td colspan="3" class="text-center">No electricians assigned to this group.</td></tr>`;
     }
 
     tableHTML += `</tbody></table>`;

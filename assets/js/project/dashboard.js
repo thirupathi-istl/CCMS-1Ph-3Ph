@@ -58,8 +58,8 @@ function update_switchPoints_status(group_id){
             	$("#installed_lights").text(response.TOTAL_LIGHTS);
             	$("#installed_lights_on").text(response.ON_LIGHTS);
             	$("#installed_lights_off").text(response.OFF_LIGHT);
-            	$("#installed_load").text("Installed Lights Load = "+response.INSTALLED_LOAD);
-            	$("#active_load").text(response.ACTIVE_LOAD);
+                $("#installed_load").text("Installed Lights Load = " + (response.INSTALLED_LOAD / 1000).toFixed(3));
+                $("#active_load").text((response.ACTIVE_LOAD / 1000).toFixed(3));
             	$("#total_consumption_units").text(response.KWH);
             	$("#energy_saved_units").text(response.SAVED_UNITS);
             	$("#amount_saved").text(response.SAVED_AMOUNT);
@@ -447,7 +447,7 @@ function setupCheckboxListeners() {
     });
     
     // For not installed devices table
-    const uninstalledCheckboxes = document.querySelectorAll('#notinstalledDeviceTable input[name="selectedDevice"]');
+    const uninstalledCheckboxes = document.querySelectorAll('#not_installed_device_list_table input[name="selectedDevice"]');
     uninstalledCheckboxes.forEach(checkbox => {
         checkbox.removeEventListener('change', updateUninstalledCount);
         checkbox.addEventListener('change', updateUninstalledCount);
@@ -472,8 +472,8 @@ function updateInstalledCount() {
 }
 
 function updateUninstalledCount() {
-    const allCheckboxes = document.querySelectorAll('#notinstalledDeviceTable input[name="selectedDevice"]');
-    const checkedCheckboxes = document.querySelectorAll('#notinstalledDeviceTable input[name="selectedDevice"]:checked');
+    const allCheckboxes = document.querySelectorAll('#not_installed_device_list_table input[name="selectedDevice"]');
+    const checkedCheckboxes = document.querySelectorAll('#not_installed_device_list_table input[name="selectedDevice"]:checked');
 
     const countElement = document.getElementById('selected_count-uninstalled');
     const selectAllCheckbox = document.getElementById('selectAll-uninstalled');
@@ -590,9 +590,16 @@ function update_list(action, selectedDevices, tableId, actionDate)
         const row = device.closest('tr');
         const statusCell = row.querySelector('td:nth-child(4)');
             let dateCell = row.querySelector('td:nth-child(5)'); // Assuming date cell is the fourth column in Total Modal
-            if ((tableId === 'installedDeviceTable'|| tableId === 'notinstalledDeviceTable') && action === 'uninstall') {
+            if ((tableId === 'installedDeviceTable') && action === 'uninstall') {
               row.remove(); 
-
+              const countElement = document.getElementById('selected_count-installed');
+              countElement.innerHTML =0;
+          }
+          else if (tableId === 'notinstalledDeviceTable' && action === 'install')
+          {
+            row.remove(); 
+            const countElement = document.getElementById('selected_count-uninstalled');
+            countElement.innerHTML =0;
           }
           else
           {

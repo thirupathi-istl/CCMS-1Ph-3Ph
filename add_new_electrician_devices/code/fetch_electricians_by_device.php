@@ -9,9 +9,14 @@ $mobile_no = $sessionVars['mobile_no'];
 $user_id = $sessionVars['user_id'];
 $role = $sessionVars['role'];
 $user_login_id = $sessionVars['user_login_id'];
-
+$user_devices="";
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
     $group_id = $_POST['group_id'];
+	include_once(BASE_PATH_1."common-files/selecting_group_device.php");
+    if($user_devices!="")
+	{
+		$user_devices= substr($user_devices, 0, -1);
+	}
 
     $conn = mysqli_connect(HOST, USERNAME, PASSWORD, DB_USER);
     if (!$conn) {
@@ -25,11 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
 
     if ($group_id === "ALL") {
         // Fetch all electricians
-        $sql_electricians = "SELECT id, electrician_name, phone_number, device_id 
-                             FROM electrician_devices 
-                             WHERE user_login_id = ?";
+        $sql_electricians = "SELECT id, electrician_name, phone_number, device_id FROM electrician_devices WHERE device_id IN ($user_devices)";
         $stmt = mysqli_prepare($conn, $sql_electricians);
-        mysqli_stmt_bind_param($stmt, "i", $user_login_id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
@@ -66,9 +68,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["group_id"])) {
         // Fetch electricians for specific group_area
         $sql_electricians = "SELECT id, electrician_name, phone_number, device_id 
                              FROM electrician_devices 
-                             WHERE group_area = ? AND user_login_id = ?";
+                             WHERE group_area = ? AND device_id IN ($user_devices)";
         $stmt = mysqli_prepare($conn, $sql_electricians);
-        mysqli_stmt_bind_param($stmt, "si", $group_id, $user_login_id);
+        mysqli_stmt_bind_param($stmt, "s", $group_id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 

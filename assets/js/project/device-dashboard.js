@@ -115,7 +115,7 @@ function initializeCcmsCard(data) {
     ccmsChartInstance = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: ['Online', 'Offline'],
+            labels: ['Active', 'Inactive'],
             datasets: [{
                 data: [onPercentage, offPercentage],
                 backgroundColor: ['#198754', '#dc3545'], // Green for Online, Red for Offline
@@ -136,7 +136,7 @@ function initializeLoadCard(data) {
     const cumulativeValue = parseFloat(data.cumulativeLoad) / 1000;
     const installedValue = parseFloat(data.installedLoad) / 1000;
     let nonActiveValue = parseFloat(data.inactiveLoad) / 1000;
-   
+    nonActiveValue =-123;
 
     // Ensure the values are valid numbers
     if (isNaN(cumulativeValue) || isNaN(installedValue) || isNaN(nonActiveValue)) {
@@ -167,7 +167,7 @@ function initializeLoadCard(data) {
               data-bs-container="body"
               data-bs-toggle="popover"
               data-bs-placement="top"
-              data-bs-content="Power Theft Detected!"
+              data-bs-content="Possible causes include power theft, excessive power consumption by lights, more lights connected than recorded, faulty wiring or loose connections, and low voltage supply issues."
               data-bs-trigger="click">
               <i class="bi bi-info-circle"></i>
             </a>
@@ -306,7 +306,7 @@ function update_switchPoints_status(group_id) {
             $("#amount_saved").text(response.SAVED_AMOUNT);
             $("#co2_saved").text(response.SAVED_CO2);
 
-            var total_units = response.TOTAL_UNITS;
+            var total_units = response.SWITCH_POINTS;
             var active_devices = response.ACTIVE_SWITCH;
             var poor_nw = Number(response.POOR_NW);  // Convert to number
             var power_fail = Number(response.POWER_FAILURE);  // Convert to number

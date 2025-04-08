@@ -144,7 +144,7 @@ $role = $sessionVars['role'];
                 </div>
                 <div class="col-xl-6 mt-lg-0 mt-3">
                   <div class="card h-100 shadow-sm text-left p-2">
-                    <p class="d-flex align-items-center"><i class="bi bi-plug h4"></i> Cumulative Load (watts)</p>
+                    <p class="d-flex align-items-center"><i class="bi bi-plug h4"></i> Cumulative Load (kW)</p>
                     <div class="progress" role="progressbar" aria-label="Primary example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
                       <div class="progress-bar bg-primary" style="width: 100%" id="installed_load">Intalled load- 0</div>
                     </div>

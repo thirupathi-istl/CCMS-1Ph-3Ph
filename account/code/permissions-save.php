@@ -134,7 +134,7 @@ function sanitize_permissions($permissions, $conn) {
     $sanitizedPermissions = [];
 
     // Whitelist of valid permission fields (optional, to avoid SQL injection through field names)
-    $validFields = ['on_off_control', 'on_off_mode', 'device_info_update', 'threshold_settings', 'iot_settings', 'lights_info_update', 'device_add_remove', 'user_details_updates', 'create_group', 'notification_update', 'installation_status_update', 'download_data', 'user_permissions'];
+    $validFields = ['on_off_control', 'on_off_mode', 'device_info_update', 'threshold_settings', 'iot_settings', 'lights_info_update', 'device_add_remove', 'user_details_updates', 'create_group','add_remove_electrician', 'notification_update', 'installation_status_update', 'download_data', 'user_permissions'];
 
     foreach ($permissions as $field => $value) {
         // Sanitize the field name and value
