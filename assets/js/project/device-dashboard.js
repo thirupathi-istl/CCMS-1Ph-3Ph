@@ -136,7 +136,7 @@ function initializeLoadCard(data) {
     const cumulativeValue = parseFloat(data.cumulativeLoad) / 1000;
     const installedValue = parseFloat(data.installedLoad) / 1000;
     let nonActiveValue = parseFloat(data.inactiveLoad) / 1000;
- 
+  
 
     // Ensure the values are valid numbers
     if (isNaN(cumulativeValue) || isNaN(installedValue) || isNaN(nonActiveValue)) {
@@ -167,7 +167,7 @@ function initializeLoadCard(data) {
               data-bs-container="body"
               data-bs-toggle="popover"
               data-bs-placement="top"
-              data-bs-content="Power Theft /Lights Using More Power Than Expected/More Lights Connected Than Allowed/Faulty Wiring or Loose Connections/Low Voltage Supply"
+              data-bs-content="Possible causes include power theft / excessive power consumption by lights / more lights connected than recorded / faulty wiring or loose connections / and low voltage supply issues."
               data-bs-trigger="click">
               <i class="bi bi-info-circle"></i>
             </a>
