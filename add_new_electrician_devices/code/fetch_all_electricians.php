@@ -17,32 +17,56 @@ if (!$conn) {
 }
 
 // Prepare SQL query
-$sql = "SELECT id, name, phone_number FROM electricians_list WHERE user_login_id = ? ORDER BY name ASC";
-$stmt = mysqli_prepare($conn, $sql);
-
-if ($stmt) {
-    // Bind parameters and execute
-    mysqli_stmt_bind_param($stmt, "i", $user_login_id);
+if ($role == "SUPERADMIN") {
+    $sql = "SELECT id, name, phone_number FROM electricians_list  ORDER BY name ASC";
+    $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_execute($stmt);
+    if ($stmt) {
+        // Bind parameters and execute
+        mysqli_stmt_execute($stmt);
 
-    // Get result
-    $result = mysqli_stmt_get_result($stmt);
-    $electricians = [];
+        // Get result
+        $result = mysqli_stmt_get_result($stmt);
+        $electricians = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $electricians[] = [
+                "id" => $row["id"],
+                "name" => $row["name"],
+                "phone" => $row["phone_number"]
+            ];
+        }
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        $electricians[] = [
-            "id" => $row["id"],
-            "name" => $row["name"],
-            "phone" => $row["phone_number"]
-        ];
+        echo json_encode(["status" => "success", "data" => $electricians]);
+        mysqli_stmt_close($stmt);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Failed to prepare SQL statement."]);
     }
-
-    echo json_encode(["status" => "success", "data" => $electricians]);
-    mysqli_stmt_close($stmt);
 } else {
-    echo json_encode(["status" => "error", "message" => "Failed to prepare SQL statement."]);
-}
+    $sql = "SELECT id, name, phone_number FROM electricians_list WHERE user_login_id = ? ORDER BY name ASC";
+    $stmt = mysqli_prepare($conn, $sql);
 
+    if ($stmt) {
+        // Bind parameters and execute
+        mysqli_stmt_bind_param($stmt, "i", $user_login_id);
+        mysqli_stmt_execute($stmt);
+
+        // Get result
+        $result = mysqli_stmt_get_result($stmt);
+        $electricians = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $electricians[] = [
+                "id" => $row["id"],
+                "name" => $row["name"],
+                "phone" => $row["phone_number"]
+            ];
+        }
+
+        echo json_encode(["status" => "success", "data" => $electricians]);
+        mysqli_stmt_close($stmt);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Failed to prepare SQL statement."]);
+    }
+}
 // Close database connection
 mysqli_close($conn);
-?>
