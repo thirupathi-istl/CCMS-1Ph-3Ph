@@ -366,50 +366,130 @@ $("#remove_devices-tab").click(function () {
 	$('#updated_telegram_groups option').prop("selected", false);
 });
 
-function loadUpdatedAlerts(device_id){
+function updateSelectedAlerts() {
+	let selectedNotification = {};
 
+	// Collect all permissions and their severity levels
+	document.querySelectorAll('#notifications-form input[type="checkbox"]').forEach(function(checkbox) {
+		const alertType = checkbox.id;
+		if (checkbox.checked) {
+			// Check if severe is selected
+			const severeRadio = document.getElementById(`${alertType}-severe`);
+			if (severeRadio && severeRadio.checked) {
+				selectedNotification[alertType] = 2; // Enabled and severe
+			} else {
+				selectedNotification[alertType] = 1; // Enabled and normal
+			}
+		} else {
+			selectedNotification[alertType] = 0; // Disabled
+		}
+	});
+
+	var multipleValues = $("#multi_selection_device_id").val() || [];
+	var selected_devices = multipleValues.join(",");
+	var device_id = selected_devices;
+
+	if (selected_devices == "" || selected_devices == null) {
+		device_id = document.getElementById('device_id').value;
+		if (device_id == "" || device_id == null) {
+			error_message_text.textContent = "Please Select the Device Id";
+			error_toast.show();
+			return false;
+		}
+	}
+
+	console.log(selectedNotification);
+	if (confirm('Are you sure you want to update the selected notifications?')) {
+		$("#pre-loader").css('display', 'block');
+		$.ajax({
+			url: '../settings/code/notifications-save.php',
+			type: 'POST',
+			data: {
+				D_ID: device_id,
+				parameters: selectedNotification
+			},
+			dataType: 'json',
+			success: function(response) {
+				$("#pre-loader").css('display', 'none');
+				if (response.status === 'success') {
+					success_message_text.textContent = response.message;
+					success_toast.show();
+				} else {
+					error_message_text.textContent = response.message;
+					error_toast.show();
+				}
+			},
+			error: function() {
+				$("#pre-loader").css('display', 'none');
+				error_message_text.textContent = "Failed to update Notification settings.";
+				error_toast.show();
+			}
+		});
+	}
+}
+
+function loadUpdatedAlerts(device_id) {
 	$("#pre-loader").css('display', 'block');
-	$(function(){
+	$(function() {
 		$.ajax({
 			type: "POST",
 			url: '../settings/code/fetch-updated-notification-settings.php',
-			traditional : true, 
-			dataType: 'json', 
-			data:{D_ID:device_id},
-
+			traditional: true,
+			dataType: 'json',
+			data: {
+				D_ID: device_id
+			},
 			success: function(response_data) {
-				$("#pre-loader").css('display', 'none');				
-				if(response_data.status=="success")
-				{					
-					$('#voltage').prop('checked', response_data.data.voltage == 1);
-					$('#overload').prop('checked', response_data.data.overload == 1);
-					$('#power_fail').prop('checked', response_data.data.power_fail == 1);
-					$('#on_off').prop('checked', response_data.data.on_off == 1);
-					$('#mcb_contactor_trip').prop('checked', response_data.data.mcb_contactor_trip == 1);
-					$('#door_alert').prop('checked', response_data.data.door_alert == 1);
-				}	
-				else
-				{
-					error_message_text.textContent=response_data.message;
+				$("#pre-loader").css('display', 'none');
+				if (response_data.status == "success") {
+					// Process each alert type
+					const alertTypes = ['voltage', 'overload', 'power_fail', 'on_off', 'mcb_contactor_trip', 'door_alert'];
+
+					alertTypes.forEach(type => {
+						const value = parseInt(response_data.data[type]);
+						const checkbox = document.getElementById(type);
+						const normalRadio = document.getElementById(`${type}-normal`);
+						const severeRadio = document.getElementById(`${type}-severe`);
+
+						// Enable checkbox if value is 1 or 2
+						checkbox.checked = (value > 0);
+
+						// Enable severity radios if checkbox is checked
+						normalRadio.disabled = !checkbox.checked;
+						severeRadio.disabled = !checkbox.checked;
+
+						// Set severity based on value
+						if (value === 2) {
+							severeRadio.checked = true;
+						} else {
+							normalRadio.checked = true;
+						}
+					});
+				} else {
+					error_message_text.textContent = response_data.message;
 					error_toast.show();
 
-					$('#voltage').prop('checked', false);
-					$('#overload').prop('checked', false);
-					$('#power_fail').prop('checked', false);
-					$('#on_off').prop('checked', false);
-					$('#mcb_contactor_trip').prop('checked', false);
-					$('#door_alert').prop('checked', false);
-				}					
+					// Reset all checkboxes and radios
+					const alertTypes = ['voltage', 'overload', 'power_fail', 'on_off', 'mcb_contactor_trip', 'door_alert'];
+					alertTypes.forEach(type => {
+						const checkbox = document.getElementById(type);
+						const normalRadio = document.getElementById(`${type}-normal`);
+						const severeRadio = document.getElementById(`${type}-severe`);
 
+						checkbox.checked = false;
+						normalRadio.disabled = true;
+						severeRadio.disabled = true;
+						normalRadio.checked = true; // Default to normal
+					});
+				}
 			},
-			error: function (textStatus, errorThrown) {
-				error_message_text.textContent="Error getting the data";
+			error: function(textStatus, errorThrown) {
+				error_message_text.textContent = "Error getting the data";
 				error_toast.show();
 				$("#pre-loader").css('display', 'none');
 			},
-			failure: function()
-			{
-				error_message_text.textContent="Failed to get the data";
+			failure: function() {
+				error_message_text.textContent = "Failed to get the data";
 				error_toast.show();
 				$("#pre-loader").css('display', 'none');
 			}
@@ -417,53 +497,48 @@ function loadUpdatedAlerts(device_id){
 	});
 }
 
-function updateSelectedAlerts()
-{
 
-	let selectedNotification = {};
+document.addEventListener('DOMContentLoaded', function() {
+	// Get all alert toggles
+	const alertToggles = document.querySelectorAll('input[name="notifications"]');
 
-    // Collect all permissions and whether they are checked or not
-	document.querySelectorAll('#notifications-form input[type="checkbox"]').forEach(function(checkbox) {
-		selectedNotification[checkbox.id] = checkbox.checked ? 1 : 0;
+	// For each toggle, add an event listener
+	alertToggles.forEach(toggle => {
+		toggle.addEventListener('change', function() {
+			const alertType = this.id;
+			const severityRadios = document.querySelectorAll(`input[name="${alertType}-severity"]`);
+
+			// Enable/disable severity options based on toggle state
+			severityRadios.forEach(radio => {
+				radio.disabled = !this.checked;
+			});
+		});
 	});
-	var multipleValues = $( "#multi_selection_device_id" ).val() || [];
-	var selected_devices=multipleValues.join( "," );
-	var device_id =selected_devices;
+
 	
-	if(selected_devices==""||selected_devices==null)
-	{
-		device_id = document.getElementById('device_id').value;
-		if(device_id==""||device_id==null)
-		{
-			error_message_text.textContent="Please Select the Device Id";
-			error_toast.show();
-			return false;
-		}
-	}
-	console.log(selectedNotification)
-	if (confirm('Are you sure you want to update the selected notifications?')) {
-		$("#pre-loader").css('display', 'block');
-		$.ajax({
-        url: '../settings/code/notifications-save.php',  // Adjust the path to the actual PHP script
-        type: 'POST',
-        data: { D_ID: device_id, parameters: selectedNotification },
-        dataType: 'json',
-        success: function(response) {
-        	$("#pre-loader").css('display', 'none'); 
-        	if (response.status === 'success') {
-        		success_message_text.textContent=response.message;
-        		success_toast.show();
-        	} else {
-        		
-        		error_message_text.textContent=response.message;
-        		error_toast.show();
-        	}
-        },
-        error: function() {
-        	$("#pre-loader").css('display', 'none'); 
-        	error_message_text.textContent="Failed to update Notification settings.";
-        	error_toast.show();
-        }
-    });
-	}
+});
+
+
+
+
+function showNotification(message, type) {
+	// Create a notification element
+	const notification = document.createElement('div');
+	notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+	notification.style.top = '20px';
+	notification.style.right = '20px';
+	notification.style.zIndex = '9999';
+
+	notification.innerHTML = `
+${message}
+<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+`;
+
+	// Add to document
+	document.body.appendChild(notification);
+
+	// Remove after 5 seconds
+	setTimeout(() => {
+		notification.remove();
+	}, 5000);
 }

@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["device_id"], $_POST["
     if (!$conn) {
         die(json_encode(["status" => "error", "message" => "Database connection failed."]));
     }
-    $permission_query = "SELECT add_remove_electrician FROM `$users_db`.user_permissions WHERE login_id = ?";
+    $permission_query = "SELECT add_remove_electrician FROM user_permissions WHERE login_id = ?";
     $permission_stmt = mysqli_prepare($conn, $permission_query);
     mysqli_stmt_bind_param($permission_stmt, "s", $user_login_id);
     mysqli_stmt_execute($permission_stmt);
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["device_id"], $_POST["
     $group_id = sanitize_input($_POST["group_id"], $conn);
 
     // Fetch new electrician details
-    $fetch_sql = "SELECT name, phone_number FROM electricians_list WHERE id = '$new_electrician_id' AND user_login_id = '$user_login_id'";
+    $fetch_sql = "SELECT name, phone_number FROM electricians_list WHERE id = '$new_electrician_id' ";
     $result = mysqli_query($conn, $fetch_sql);
 
     if ($row = mysqli_fetch_assoc($result)) {

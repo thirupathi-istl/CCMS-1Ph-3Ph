@@ -248,7 +248,9 @@ $permission_check = 0;
 
     <?php
     include(BASE_PATH . "devices/html/group-creation.php");
+    include(BASE_PATH . "add_new_electrician_devices/html/remove_electrician.php");
     include(BASE_PATH . "add_new_electrician_devices/html/update_electrician.php");
+
 
     ?>
 

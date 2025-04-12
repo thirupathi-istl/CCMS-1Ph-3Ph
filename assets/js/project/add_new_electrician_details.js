@@ -288,23 +288,52 @@ function setupCheckboxListenersList() {
     });
 }
 
-function removeElectrician(electricianId, electricianName, electricianPhone) {
-    if (confirm("Are you sure you want to remove  electrician and his access from Devices?")) {
-        fetch("../add_new_electrician_devices/code/remove_electrician.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `electrician_id=${encodeURIComponent(electricianId)}&electricianName=${encodeURIComponent(electricianName)}&electricianPhone=${encodeURIComponent(electricianPhone)}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                refresh_data();
-                toggleRemoveAllButtonList(); // Disable the button after refresh
+// function removeElectrician(electricianId, electricianName, electricianPhone) {
+//     if (confirm("Are you sure you want to remove  electrician and his access from Devices?")) {
+//         fetch("../add_new_electrician_devices/code/remove_electrician.php", {
+//             method: "POST",
+//             headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//             body: `electrician_id=${encodeURIComponent(electricianId)}&electricianName=${encodeURIComponent(electricianName)}&electricianPhone=${encodeURIComponent(electricianPhone)}`
+//         })
+//             .then(response => response.json())
+//             .then(data => {
+//                 alert(data.message);
+//                 refresh_data();
+//                 toggleRemoveAllButtonList(); // Disable the button after refresh
 
-            })
-            .catch(error => console.error("Error removing electrician:", error));
-    }
+//             })
+//             .catch(error => console.error("Error removing electrician:", error));
+//     }
+// }
+
+let selectedElectrician = {};
+
+function removeElectrician(electricianId, electricianName, electricianPhone) {
+    selectedElectrician = { electricianId, electricianName, electricianPhone };
+    const removeModal = new bootstrap.Modal(document.getElementById('removeElectricianModal'));
+    removeModal.show();
 }
+
+document.getElementById('confirmRemoveElectrician').addEventListener('click', function () {
+    const { electricianId, electricianName, electricianPhone } = selectedElectrician;
+
+    fetch("../add_new_electrician_devices/code/remove_electrician.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `electrician_id=${encodeURIComponent(electricianId)}&electricianName=${encodeURIComponent(electricianName)}&electricianPhone=${encodeURIComponent(electricianPhone)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            refresh_data();
+            toggleRemoveAllButtonList();
+            const removeModal = bootstrap.Modal.getInstance(document.getElementById('removeElectricianModal'));
+            removeModal.hide();
+        })
+        .catch(error => console.error("Error removing electrician:", error));
+});
+
+
 
 function RemoveAllElectricions() {
     const selectedIds = Array.from(document.querySelectorAll(".row-checkbox-list:checked"))
