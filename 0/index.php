@@ -269,13 +269,24 @@ SessionManager::checkSession();
                     <div class="row mt-3">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h6 class="card-title mb-0">
-                                        <i class="bi bi-geo-alt-fill"></i> Device Map
-                                    </h6>
-                                    <select class="form-select pointer" id="locationsDropdown" style="width: auto;"></select>
+                                <div class="card-header">
+                                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+                                        <!-- Title -->
+                                        <h6 class="card-title mb-2 mb-sm-0">
+                                            <i class="bi bi-geo-alt-fill"></i> Device Map
+                                        </h6>
+
+                                        <!-- Controls container - same line on larger screens -->
+                                        <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="refreshMap()">
+                                                 Refresh
+                                            </button>
+                                            <select class="form-select form-select-sm" id="locationsDropdown" style="min-width: 150px;"></select>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body p-0">
+
                                     <div class="map-container" id="map"></div>
                                     <div class="col-12 mt-2">
                                         <small>* <i class="bi bi-geo-alt-fill text-danger"></i> Lights are Turned OFF</small>

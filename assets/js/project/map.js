@@ -1,42 +1,45 @@
- 
 
- /* function initMap() {
 
-  	var options = {
-  		zoom: 8,
-  		center: { lat: 17.8850, lng: 78.8867 }
-  	};
+/* function initMap() {
 
-  	var map = new google.maps.Map(document.getElementById('map'), options);
-  	var marker = new google.maps.Marker({
-  		position: { lat: 17.8850, lng: 76.4867 },
-  		map: map
-  	});
-  }*/
-function initMap()
-{
-	
+	   var options = {
+		   zoom: 8,
+		   center: { lat: 17.8850, lng: 78.8867 }
+	   };
+
+	   var map = new google.maps.Map(document.getElementById('map'), options);
+	   var marker = new google.maps.Marker({
+		   position: { lat: 17.8850, lng: 76.4867 },
+		   map: map
+	   });
+ }*/
+function initMap() {
+
 }
 
-var loc_lat="17.890307";
-var loc_long="79.863593";
-let zoom_level=7;
-var user_map="";
-var group="";
-var modal_event=0;
+var loc_lat = "17.890307";
+var loc_long = "79.863593";
+let zoom_level = 7;
+var user_map = "";
+var group = "";
+var modal_event = 0;
 
 let group_list_map = document.getElementById('group-list');
-var group_name=localStorage.getItem("GroupNameValue")
-if(group_name==""||group_name==null)
-{
-	group_name= group_list_map.value;
+var group_name = localStorage.getItem("GroupNameValue")
+if (group_name == "" || group_name == null) {
+	group_name = group_list_map.value;
 }
 gps_initMaps(group_name);
-group_list_map.addEventListener('change', function() {
+group_list_map.addEventListener('change', function () {
 	group_name = group_list_map.value;
 	gps_initMaps(group_name);
 });
-
+function refreshMap()
+{
+	let group_list_map = document.getElementById('group-list');
+	group_name = group_list_map.value;
+	gps_initMaps(group_name);
+}
 function gps_initMaps(group_name) {
 
 	$("#loader").css('display', 'block');
@@ -44,13 +47,13 @@ function gps_initMaps(group_name) {
 		$.ajax({
 			type: "POST",
 			url: '../devices/code/gis-locations.php',
-			traditional : true, 
-			data:{GROUP_ID:group_name},
-			dataType: "json", 
-			success:  function(data){
+			traditional: true,
+			data: { GROUP_ID: group_name },
+			dataType: "json",
+			success: function (data) {
 				$("#loader").css('display', 'none');
 				on_success(data[0], data[1]);
-				
+
 			},
 			failure: function (response) {
 				alert(response.responseText);
