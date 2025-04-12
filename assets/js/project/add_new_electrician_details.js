@@ -1060,11 +1060,7 @@ document.getElementById("updateElectrician").addEventListener("click", function 
 // if (defaultDeviceId) {
 //     fetchElectricians(defaultDeviceId);
 // }
-document.addEventListener("DOMContentLoaded", function () {
-    var group_id = document.getElementById('group-list').value;
 
-    fetchElectricians(group_id);
-});
 // Function to filter the table based on search input
 // Function to filter the table based on the search input
 var interval_Id_1 =interval_Id ;
