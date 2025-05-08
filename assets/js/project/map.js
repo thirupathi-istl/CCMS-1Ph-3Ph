@@ -40,6 +40,12 @@ function refreshMap()
 	group_name = group_list_map.value;
 	gps_initMaps(group_name);
 }
+// document.addEventListener('DOMContentLoaded', function () {
+//     let group_list = document.getElementById('group-list');
+//     let group_name = group_list.value;
+//     gps_initMaps(group_name);
+
+// });
 function gps_initMaps(group_name) {
 
 	$("#loader").css('display', 'block');

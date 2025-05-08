@@ -18,6 +18,107 @@ $permission_check = 0;
 
 <head>
     <title>Add New Electrician / Assign Devices</title>
+    <style>
+        /* Make sure the sticky header works properly */
+        /* Make sure the sticky header works properly */
+        .table-responsive .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        /* Ensure the header background covers the full width */
+        .table-header1-row-1 {
+            background-color: #343a40;
+            color: white;
+        }
+
+        /* Base styles for search container */
+        .search-container {
+            width: 300px;
+        }
+
+        .remove-all-btn {
+            width: auto;
+            white-space: nowrap;
+        }
+
+        /* Larger desktop screens (original layout) */
+        @media (min-width: 1430px) {
+            .search-container {
+                width: 300px;
+            }
+        }
+
+        /* Medium-sized screens (laptops and small desktops) */
+        @media (min-width: 1200px) and (max-width: 1429.98px) {
+            .search-container {
+                width: 250px;
+            }
+
+            .remove-all-btn {
+                width: auto;
+            }
+        }
+
+        /* Tablet landscape */
+        @media (min-width: 992px) and (max-width: 1199.98px) {
+            .search-container {
+                width: 220px;
+            }
+
+            .remove-all-btn {
+                width: auto;
+            }
+        }
+
+        /* Tablet portrait */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .search-container {
+                width: 180px;
+            }
+
+            .remove-all-btn {
+                width: auto;
+                font-size: 0.875rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            #searchBar::placeholder {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Mobile screens */
+        @media (max-width: 767.98px) {
+            .d-flex.flex-column.flex-md-row {
+                flex-direction: column !important;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .remove-all-btn {
+                width: 100%;
+            }
+
+            /* Preserve the card's boundaries */
+            .card-body .row .col-12 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+        }
+
+        /* Ensure proper spacing in the table cells for small screens */
+        @media (max-width: 575.98px) {
+
+            .table td,
+            .table th {
+                padding: 0.5rem;
+            }
+        }
+    </style>
     <?php
     include(BASE_PATH . "assets/html/start-page.php");
     ?>
@@ -138,20 +239,19 @@ $permission_check = 0;
                             <div class="row mt-2 d-flex justify-content-center">
                                 <div class="col-12">
                                     <!-- Search and Remove All -->
-                                    <div class="d-flex justify-content-end mb-3">
-                                        <div class="input-group w-auto">
-                                            <input type="text" id="searchBar" class="form-control" placeholder="Search by Device ID or Electrician Name" onkeyup="filterTable()" style="min-width: 300px;">
+                                    <!-- Search and Remove All - Updated for responsiveness -->
+                                    <!-- Search and Remove All - Updated for responsiveness -->
+                                    <div class="d-flex flex-column flex-xl-row justify-content-end mb-3 align-items-xl-center gap-2">
+                                        <div class="input-group search-container">
+                                            <input type="text" id="searchBar" class="form-control" placeholder="Search by Device ID or Electrician Name" onkeyup="filterTable()">
                                             <button class="btn btn-primary" type="button" onclick="filterTable()">
                                                 <i class="bi bi-search"></i> Search
                                             </button>
-                                            <button class="btn btn-danger ms-2" id="removeAllBtn" onclick="removeSelectedElectricians()" disabled>
-                                                Remove All
-                                            </button>
                                         </div>
+                                        <button class="btn btn-danger remove-all-btn" id="removeAllBtn" onclick="removeSelectedElectricians()" disabled>
+                                            Remove All
+                                        </button>
                                     </div>
-
-
-
                                     <!-- Table -->
                                     <div class="table-responsive w-100" style="height: 400px; overflow-y: auto;">
                                         <table class="table table-bordered w-100" id="electricianTable">
@@ -221,7 +321,7 @@ $permission_check = 0;
                                     </div>
 
                                     <!-- Table -->
-                                    <div class="table-responsive w-100"style="height: 400px; overflow-y: auto;">
+                                    <div class="table-responsive w-100" style="height: 400px; overflow-y: auto;">
                                         <table class="table table-bordered w-100" id="electricianList">
                                             <thead class="table-dark">
                                                 <!-- Dynamic Content Will Be Inserted Here -->
@@ -247,7 +347,6 @@ $permission_check = 0;
 
 
     <?php
-    include(BASE_PATH . "devices/html/group-creation.php");
     include(BASE_PATH . "add_new_electrician_devices/html/remove_electrician.php");
     include(BASE_PATH . "add_new_electrician_devices/html/update_electrician.php");
 
@@ -260,7 +359,6 @@ $permission_check = 0;
     <script src="<?php echo BASE_PATH; ?>assets/js/sidebar-menu.js"></script>
     <script src="<?php echo BASE_PATH; ?>assets/js/project/add_new_electrician_details.js"></script>
 
-    <script src="<?php echo BASE_PATH; ?>json-data/json-data.js"></script>
 
 
     <?php

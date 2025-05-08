@@ -22,70 +22,65 @@ $parameter_value = "";
 $parameter = "";
 
 
-if ($_SERVER["REQUEST_METHOD"] == "GET") 
-{
-$page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT); // Ensure it is sanitized as an integer
-$limit = filter_input(INPUT_GET, 'limit', FILTER_SANITIZE_NUMBER_INT); // Ensure it is sanitized as an integer
-$search_user = filter_input(INPUT_GET, 'search_user', FILTER_SANITIZE_STRING); // Ensure it is sanitized as an integer
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT); // Ensure it is sanitized as an integer
+    $limit = filter_input(INPUT_GET, 'limit', FILTER_SANITIZE_NUMBER_INT); // Ensure it is sanitized as an integer
+    $search_user = filter_input(INPUT_GET, 'search_user', FILTER_SANITIZE_STRING); // Ensure it is sanitized as an integer
 
-/*$page= $_GET['page'];
+    /*$page= $_GET['page'];
 $limit= $_GET['limit'];*/
 
-$conn = mysqli_connect(HOST, USERNAME, PASSWORD, DB_USER);
+    $conn = mysqli_connect(HOST, USERNAME, PASSWORD, DB_USER);
 
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-$page = sanitize_input($page, $conn);
-$limit = sanitize_input($limit, $conn);
-$search_user = sanitize_input($search_user, $conn);
-
-$page = $page ? intval($page) : 1;
-$limit = $limit ? intval($limit) : 20;
-
-$offset = ($page - 1) * $limit;
-
-if($role=="SUPERADMIN"&&$user_type=="MANAGER")
-{
-    $totalQuery="";
-    $sql="";
-
-    if($search_user=="")
-    {
-        //account_delete='1'and
-        $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE  id!='$user_login_id'";
-        $sql = "SELECT * FROM login_details WHERE id!='$user_login_id' LIMIT ? OFFSET ?";
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
     }
-    else
-    {
-        $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE  (`user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%') AND id!='$user_login_id'";
-        
-        $sql = "SELECT * FROM login_details WHERE  (`user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%') AND id!='$user_login_id' LIMIT ? OFFSET ?";
-    }
+    $page = sanitize_input($page, $conn);
+    $limit = sanitize_input($limit, $conn);
+    $search_user = sanitize_input($search_user, $conn);
+
+    $page = $page ? intval($page) : 1;
+    $limit = $limit ? intval($limit) : 20;
+
+    $offset = ($page - 1) * $limit;
+
+    if ($role == "SUPERADMIN" && $user_type == "MANAGER") {
+        $totalQuery = "";
+        $sql = "";
+
+        if ($search_user == "") {
+            //account_delete='1'and
+            $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE  id!='$user_login_id'";
+            $sql = "SELECT * FROM login_details WHERE id!='$user_login_id' LIMIT ? OFFSET ?";
+        } else {
+            $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE  (`user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%') AND id!='$user_login_id'";
+
+            $sql = "SELECT * FROM login_details WHERE  (`user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%') AND id!='$user_login_id' LIMIT ? OFFSET ?";
+        }
 
 
-    $totalResult = mysqli_query($conn, $totalQuery);
+        $totalResult = mysqli_query($conn, $totalQuery);
 
-    if (!$totalResult) {
-        die("Query failed: " . mysqli_error($conn));
-    }
+        if (!$totalResult) {
+            die("Query failed: " . mysqli_error($conn));
+        }
 
-    $totalRow = mysqli_fetch_assoc($totalResult);
-    $totalRecords = $totalRow['total'];
-    $totalPages = ceil($totalRecords / $limit);
+        $totalRow = mysqli_fetch_assoc($totalResult);
+        $totalRecords = $totalRow['total'];
+        $totalPages = ceil($totalRecords / $limit);
 
-    $stmt = mysqli_prepare($conn, $sql);
+        $stmt = mysqli_prepare($conn, $sql);
 
-    if (!$stmt) {
-        die("Prepare failed: " . mysqli_error($conn));
-    }
+        if (!$stmt) {
+            die("Prepare failed: " . mysqli_error($conn));
+        }
 
-    mysqli_stmt_bind_param($stmt, "ii",  $limit, $offset);
-    mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_param($stmt, "ii",  $limit, $offset);
+        mysqli_stmt_execute($stmt);
 
-    $result = mysqli_stmt_get_result($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-    $data ="<thead>
+        $data = "<thead>
     <tr>
     <th class='table-header-row-1'>Name</th>
     <th class='table-header-row-1'>User_Id</th>
@@ -95,22 +90,21 @@ if($role=="SUPERADMIN"&&$user_type=="MANAGER")
     <th class='table-header-row-1'>Status</th>
     <th class='table-header-row-1'>Login Page</th>
     <th class='table-header-row-1'>Version</th>
-    <th class='table-header-row-1'>Action</th>
+    <th class='table-header-row-1 action-column' scope='col'>Action</th>
     </tr>
     </thead> <tbody >";
-    /*while ($row = mysqli_fetch_assoc($result)) {
+        /*while ($row = mysqli_fetch_assoc($result)) {
         $data[] = $row;
     }*/
 
-    while ($row = mysqli_fetch_assoc($result)) { 
-        $text_class="";
-        if($row['account_delete']==0)
-        {
-            $row['status']="DELETED";
-            $text_class="class='text-danger'";
-        }
+        while ($row = mysqli_fetch_assoc($result)) {
+            $text_class = "";
+            if ($row['account_delete'] == 0) {
+                $row['status'] = "DELETED";
+                $text_class = "class='text-danger'";
+            }
 
-        $data=$data."<tr>
+            $data = $data . "<tr>
         <td>{$row['name']}</td>
         <td>{$row['user_id']}</td>
         <td>{$row['role']}</td>
@@ -152,58 +146,53 @@ if($role=="SUPERADMIN"&&$user_type=="MANAGER")
         </div>
         </td>
         </tr>";
-    }
+        }
 
-    $data=$data."</tbody>";
-    $response = ['data' => $data, 'totalPages' => $totalPages ];
+        $data = $data . "</tbody>";
+        $response = ['data' => $data, 'totalPages' => $totalPages];
 
-    header('Content-Type: application/json');
-    mysqli_stmt_close($stmt);
-}
-else if($role=="SUPERADMIN")
-{
-    $totalQuery="";
-    $sql="";
+        header('Content-Type: application/json');
+        mysqli_stmt_close($stmt);
+    } else if ($role == "SUPERADMIN") {
+        $totalQuery = "";
+        $sql = "";
 
-    if($search_user=="")
-    {
-        $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' AND id!='$user_login_id' AND (created_by='$user_login_id' OR role!='SUPERADMIN')";
-        $sql = "SELECT * FROM login_details WHERE account_delete='1' AND id!='$user_login_id' AND (created_by='$user_login_id' OR role!='SUPERADMIN') LIMIT ? OFFSET ?";
-    }
-    else
-    {
-        $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' and (`user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%') AND id!='$user_login_id' AND (created_by='$user_login_id' OR role!='SUPERADMIN')";
-        
-        $sql = "SELECT * FROM login_details WHERE account_delete='1'and (`user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%') AND id!='$user_login_id' AND (created_by='$user_login_id' OR role!='SUPERADMIN') LIMIT ? OFFSET ?";
-    }
+        if ($search_user == "") {
+            $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' AND id!='$user_login_id' AND (created_by='$user_login_id' OR role!='SUPERADMIN')";
+            $sql = "SELECT * FROM login_details WHERE account_delete='1' AND id!='$user_login_id' AND (created_by='$user_login_id' OR role!='SUPERADMIN') LIMIT ? OFFSET ?";
+        } else {
+            $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' and (`user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%') AND id!='$user_login_id' AND (created_by='$user_login_id' OR role!='SUPERADMIN')";
+
+            $sql = "SELECT * FROM login_details WHERE account_delete='1'and (`user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%') AND id!='$user_login_id' AND (created_by='$user_login_id' OR role!='SUPERADMIN') LIMIT ? OFFSET ?";
+        }
 
 
-    $totalResult = mysqli_query($conn, $totalQuery);
+        $totalResult = mysqli_query($conn, $totalQuery);
 
-    if (!$totalResult) {
-        die("Query failed: " . mysqli_error($conn));
-    }
+        if (!$totalResult) {
+            die("Query failed: " . mysqli_error($conn));
+        }
 
-    $totalRow = mysqli_fetch_assoc($totalResult);
-    $totalRecords = $totalRow['total'];
-    $totalPages = ceil($totalRecords / $limit);
+        $totalRow = mysqli_fetch_assoc($totalResult);
+        $totalRecords = $totalRow['total'];
+        $totalPages = ceil($totalRecords / $limit);
 
-    $stmt = mysqli_prepare($conn, $sql);
+        $stmt = mysqli_prepare($conn, $sql);
 
-    if (!$stmt) {
-        die("Prepare failed: " . mysqli_error($conn));
-    }
+        if (!$stmt) {
+            die("Prepare failed: " . mysqli_error($conn));
+        }
 
-    mysqli_stmt_bind_param($stmt, "ii",  $limit, $offset);
-    mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_param($stmt, "ii",  $limit, $offset);
+        mysqli_stmt_execute($stmt);
 
-    $result = mysqli_stmt_get_result($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-   /* $data = [];
+        /* $data = [];
     while ($row = mysqli_fetch_assoc($result)) {
         $data[] = $row;
     }*/
-    $data="<thead>
+        $data = "<thead>
     <tr>
     <th class='table-header-row-1'>Name</th>
     <th class='table-header-row-1'>User_Id</th>
@@ -212,24 +201,25 @@ else if($role=="SUPERADMIN")
     <th class='table-header-row-1'>Email</th>
 
     <th class='table-header-row-1'>Status</th>
-    <th class='table-header-row-1'>Action</th>
+    <th class='table-header-row-1 action-column' scope='col'>Action</th>
     </tr>
     </thead> <tbody >";
-    while ($row = mysqli_fetch_assoc($result)) { 
-        $data=$data."<tr>
-        <td>{$row['name']}</td>
-        <td>{$row['user_id']}</td>
-        <td>{$row['role']}</td>
-        <td>{$row['mobile_no']}</td>
-        <td>{$row['email_id']}</td>
-        <td>{$row['status']}</td>
-        <td>
-        <div class='btn-group dropend p-0 z-3 popup-btn-group'>
-        <button class='btn p-0' type='button' data-bs-toggle='dropdown' style='border:none'>
-        <i class='bi bi-three-dots-vertical'></i>
-        </button>
-        <ul class='dropdown-menu p-0 border-0' style='width:200px'>
-        <div class='list-group'>
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data = $data . "<tr>
+          <td>{$row['name']}</td>
+    <td>{$row['user_id']}</td>
+    <td>{$row['role']}</td>
+    <td>{$row['mobile_no']}</td>
+    <td>{$row['email_id']}</td>
+    <td>{$row['status']}</td>
+    <td>
+    <div class='btn-group dropend p-0 z-3 popup-btn-group'>
+    <button class='btn p-0' type='button' data-bs-toggle='dropdown' style='border:none'>
+    <i class='bi bi-three-dots-vertical'></i>
+    </button>
+    <ul class='dropdown-menu p-0 border-0' style='width:200px'>
+    <div class='list-group'>
+
         <button type='button' onclick='editMainTableDetails(\"{$row['id']}\", \"{$row['mobile_no']}\", \"{$row['name']}\", this)' class='list-group-item list-group-item-action text-primary'>
         <i class='bi bi-pen-fill'></i><strong> Edit</strong>
         </button>
@@ -253,58 +243,53 @@ else if($role=="SUPERADMIN")
         </div>
         </td>
         </tr>";
-    }
-    $data=$data."</tbody>";
-    $response = ['data' => $data, 'totalPages' => $totalPages ];
+        }
+        $data = $data . "</tbody>";
+        $response = ['data' => $data, 'totalPages' => $totalPages];
 
-    header('Content-Type: application/json');
-    mysqli_stmt_close($stmt);
-}
-else
-{
-    $totalQuery="";
-    $sql="";
+        header('Content-Type: application/json');
+        mysqli_stmt_close($stmt);
+    } else {
+        $totalQuery = "";
+        $sql = "";
 
-    if($search_user=="")
-    {
-        $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' AND created_by='$user_login_id'";
-        $sql = "SELECT * FROM login_details WHERE account_delete='1' AND created_by='$user_login_id' LIMIT ? OFFSET ?";
-    }
-    else
-    {
-        $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' AND created_by='$user_login_id' AND `user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%'";
-        $sql = "SELECT * FROM login_details WHERE account_delete='1' AND created_by='$user_login_id' AND `user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%' LIMIT ? OFFSET ?";
-    }
+        if ($search_user == "") {
+            $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' AND created_by='$user_login_id'";
+            $sql = "SELECT * FROM login_details WHERE account_delete='1' AND created_by='$user_login_id' LIMIT ? OFFSET ?";
+        } else {
+            $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' AND created_by='$user_login_id' AND `user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%'";
+            $sql = "SELECT * FROM login_details WHERE account_delete='1' AND created_by='$user_login_id' AND `user_id` LIKE '%$search_user%' or `mobile_no` LIKE '%$search_user%' or `email_id` LIKE '%$search_user%' or `name` LIKE '%$search_user%' LIMIT ? OFFSET ?";
+        }
 
-   // $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' AND created_by='$user_login_id'";
-    $totalResult = mysqli_query($conn, $totalQuery);
+        // $totalQuery = "SELECT COUNT(*) AS total FROM login_details WHERE account_delete='1' AND created_by='$user_login_id'";
+        $totalResult = mysqli_query($conn, $totalQuery);
 
-    if (!$totalResult) {
-        die("Query failed: " . mysqli_error($conn));
-    }
+        if (!$totalResult) {
+            die("Query failed: " . mysqli_error($conn));
+        }
 
-    $totalRow = mysqli_fetch_assoc($totalResult);
-    $totalRecords = $totalRow['total'];
-    $totalPages = ceil($totalRecords / $limit);
+        $totalRow = mysqli_fetch_assoc($totalResult);
+        $totalRecords = $totalRow['total'];
+        $totalPages = ceil($totalRecords / $limit);
 
 
-   // $sql = "SELECT * FROM login_details WHERE account_delete='1' AND created_by='$user_login_id' LIMIT ? OFFSET ?";
-    $stmt = mysqli_prepare($conn, $sql);
+        // $sql = "SELECT * FROM login_details WHERE account_delete='1' AND created_by='$user_login_id' LIMIT ? OFFSET ?";
+        $stmt = mysqli_prepare($conn, $sql);
 
-    if (!$stmt) {
-        die("Prepare failed: " . mysqli_error($conn));
-    }
+        if (!$stmt) {
+            die("Prepare failed: " . mysqli_error($conn));
+        }
 
-    mysqli_stmt_bind_param($stmt, "ii",  $limit, $offset);
-    mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_param($stmt, "ii",  $limit, $offset);
+        mysqli_stmt_execute($stmt);
 
-    $result = mysqli_stmt_get_result($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-   /* $data = [];
+        /* $data = [];
     while ($row = mysqli_fetch_assoc($result)) {
         $data[] = $row;
     }*/
-    $data="<thead>
+        $data = "<thead>
     <tr>
     <th class='table-header-row-1'>Name</th>
     <th class='table-header-row-1'>User_Id</th>
@@ -313,25 +298,25 @@ else
     <th class='table-header-row-1'>Email</th>
 
     <th class='table-header-row-1'>Status</th>
-    <th class='table-header-row-1'>Action</th>
+    <th class='table-header-row-1 action-column' scope='col'>Action</th>
     </tr>
     </thead> <tbody >";
-    while ($row = mysqli_fetch_assoc($result)) { 
-        $data=$data."
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data = $data . "
         <tr>
-        <td>{$row['name']}</td>
-        <td>{$row['user_id']}</td>
-        <td>{$row['role']}</td>
-        <td>{$row['mobile_no']}</td>
-        <td>{$row['email_id']}</td>
-        <td>{$row['status']}</td>
-        <td>
-        <div class='btn-group dropend p-0 z-3 popup-btn-group'>
-        <button class='btn p-0' type='button' data-bs-toggle='dropdown' style='border:none'>
-        <i class='bi bi-three-dots-vertical'></i>
-        </button>
-        <ul class='dropdown-menu p-0 border-0' style='width:200px'>
-        <div class='list-group'>
+           <td>{$row['name']}</td>
+    <td>{$row['user_id']}</td>
+    <td>{$row['role']}</td>
+    <td>{$row['mobile_no']}</td>
+    <td>{$row['email_id']}</td>
+    <td>{$row['status']}</td>
+    <td>
+    <div class='btn-group dropend p-0'>
+    <button class='btn p-0' type='button' data-bs-toggle='dropdown' style='border:none'>
+    <i class='bi bi-three-dots-vertical'></i>
+    </button>
+    <ul class='dropdown-menu dropdown-menu-user-list p-0 border-0' style='width:200px'>
+    <div class='list-group'>
         <button type='button' onclick='editMainTableDetails(\"{$row['id']}\", \"{$row['mobile_no']}\", \"{$row['name']}\", this)' class='list-group-item list-group-item-action text-primary'>
         <i class='bi bi-pen-fill'></i><strong> Edit</strong>
         </button>
@@ -352,25 +337,23 @@ else
         </div>
         </td>
         </tr>";
+        }
+        $data = $data . "</tbody>";
+
+        $response = ['data' => $data, 'totalPages' => $totalPages];
+
+        header('Content-Type: application/json');
+        mysqli_stmt_close($stmt);
     }
-    $data=$data."</tbody>";
-
-    $response = ['data' => $data, 'totalPages' => $totalPages ];
-
-    header('Content-Type: application/json');
-    mysqli_stmt_close($stmt);
-}
-echo json_encode($response);
-mysqli_close($conn);
+    echo json_encode($response);
+    mysqli_close($conn);
 }
 
 
-function sanitize_input($data, $conn) {
+function sanitize_input($data, $conn)
+{
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
     return mysqli_real_escape_string($conn, $data);
 }
-?>
-
-

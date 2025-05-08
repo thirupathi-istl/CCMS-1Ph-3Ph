@@ -32,15 +32,7 @@ group_list.addEventListener('change', function () {
     }
 });
 
-// setInterval(refresh_data, 20000);
-// function refresh_data() {
-//     console.log("val");
-//     let group_name = group_list.value;
-//     if (group_name !== "" && group_name !== null) {
-//         update_switchPoints_status(group_name);
-//         update_alerts(group_name);
-//     }
-// }
+
 
 // Lights Card
 var lightsChartInstance = null; // Store chart instance globally
@@ -144,8 +136,8 @@ function initializeLoadCard(data) {
     const cumulativeValue = parseFloat(data.cumulativeLoad) / 1000;
     const installedValue = parseFloat(data.installedLoad) / 1000;
     let nonActiveValue = parseFloat(data.inactiveLoad) / 1000;
-    
-  
+    nonActiveValue = -1234;
+
 
     // Ensure the values are valid numbers
     if (isNaN(cumulativeValue) || isNaN(installedValue) || isNaN(nonActiveValue)) {
@@ -167,52 +159,108 @@ function initializeLoadCard(data) {
         // nonActiveValue=0-nonActiveValue;
 
         inactiveLoadContainer.innerHTML = `
-        <div class="p-2 bg-danger bg-opacity-10 border border-danger rounded d-flex flex-column align-items-center justify-content-center h-100 text-center w-100">
-          <div class="d-flex align-items-center flex-wrap justify-content-center">
-            <h4 id="active-load" class="text-danger mb-0 me-2 text-break">${-nonActiveValue}</h4>
-            <a tabindex="0" role="button"
-              class="text-danger"
-              id="info-icon"
-              data-bs-container="body"
-              data-bs-toggle="popover"
-              data-bs-placement="top"
-              data-bs-content="Possible causes include power theft / excessive power consumption by lights / more lights connected than recorded / faulty wiring or loose connections / and low voltage supply issues."
-              data-bs-trigger="click">
-              <i class="bi bi-info-circle"></i>
-            </a>
-          </div>
-          <small class="mt-1 text-danger text-wrap w-100">OverLoad</small> 
-        </div>
-      `;
+          <div class="p-2 bg-danger bg-opacity-10 border border-danger rounded d-flex flex-column align-items-center justify-content-center h-100 text-center w-100 cursor-pointer" 
+         id="overload-alert-div" 
+         data-bs-toggle="tooltip" 
+         data-bs-placement="top" 
+         title="Possible causes include power theft / excessive power consumption by lights / more lights connected than recorded / faulty wiring or loose connections / and low voltage supply issues. Click to see detailed information" 
+         role="button">
+      <div class="d-flex align-items-center flex-wrap justify-content-center">
+        <h4 id="active-load" class="text-danger mb-0 me-2 text-break">${-nonActiveValue}</h4>
+        <span class="text-danger">
+          <i class="bi bi-info-circle"></i>
+        </span>
+      </div>
+      <small class="mt-1 text-danger text-wrap w-100">OverLoad</small> 
+    </div>
+    `;
 
 
-        // Attach an event listener to show an alert message when clicked
+        // Add modal HTML to the page if it doesn't already exist
+        if (!document.getElementById('overloadModal')) {
+            const modalHTML = `
+            <div class="modal fade" id="overloadModal" tabindex="-1" aria-labelledby="overloadModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger bg-opacity-10">
+                            <h5 class="modal-title text-danger" id="overloadModalLabel">Overload Analysis</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Device ID</th>
+                                            <th>Total Load Installed (W)</th>
+                                            <th>Total Load Received (W)</th>
+                                            <th>Difference (W)</th>
+                                            <th>Status</th>
 
+                                        </tr>
+                                    </thead>
+                                    <tbody id="overloadTableBody">
+                                        <tr>
+                                            <td colspan="5" class="text-center">Loading data...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="alert alert-warning mt-3">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <strong>Possible causes:</strong> Power theft, excessive power consumption, more lights connected than recorded, faulty wiring or loose connections, and low voltage supply issues.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Initialize tooltip
+        const tooltipTrigger = document.querySelector("#overload-alert-div");
+        if (tooltipTrigger) {
+            new bootstrap.Tooltip(tooltipTrigger);
+        }
+
+        // Add click event listener to overload div to show modal and load data
+        const overloadDiv = document.querySelector("#overload-alert-div");
+        if (overloadDiv) {
+            overloadDiv.addEventListener("click", function () {
+                // Hide the tooltip when clicking the div
+                const tooltip = bootstrap.Tooltip.getInstance(overloadDiv);
+                if (tooltip) {
+                    tooltip.hide();
+                }
+
+                // Show the modal
+                const overloadModal = new bootstrap.Modal(document.getElementById('overloadModal'));
+                overloadModal.show();
+
+                // Fetch overload data
+                fetchOverloadData();
+            });
+        }
 
         // Set chart to 100% active (avoid negative inactive values)
         activePercentage = 100;
         inactivePercentage = 0;
-        const popoverTrigger = document.querySelector("#info-icon");
-        if (popoverTrigger) {
-            const popover = new bootstrap.Popover(popoverTrigger);
+    }
 
-            // Close popover when clicking elsewhere
-            document.addEventListener("click", function (event) {
-                if (!popoverTrigger.contains(event.target) && !event.target.closest('.popover')) {
-                    popover.hide();
-                }
-            });
-        }
-    } else {
+    else {
         // Normal case: show inactive load
         inactiveLoadContainer.innerHTML = `
-            <div class="p-2 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-90 text-center fixed-size">
-                <div>
-                    <h4 id="active-load" class=" mb-0">${nonActiveValue} </h4>
-                    <small>Inactive Load</small>
-                </div>
+        <div class="p-2 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-90 text-center fixed-size">
+            <div>
+                <h4 id="active-load" class=" mb-0">${nonActiveValue} </h4>
+                <small>Inactive Load</small>
             </div>
-        `;
+        </div>
+    `;
 
         // Normal percentage calculation
         if (cumulativeValue !== 0) {
@@ -222,6 +270,81 @@ function initializeLoadCard(data) {
             activePercentage = 0;
             inactivePercentage = 100; // Default when no load
         }
+    }
+
+
+    // Function to fetch overload data via AJAX
+    function fetchOverloadData() {
+        // Show loading state
+        document.getElementById('overloadTableBody').innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border spinner-border-sm text-danger me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Loading overload analysis...
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        // Make AJAX request
+        $.ajax({
+            url: '../dashboard/code/update_overload_data.php', // Replace with your actual API endpoint
+            method: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                updateOverloadTable(response);
+            },
+            error: function (xhr, status, error) {
+                document.getElementById('overloadTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-danger">
+                            <i class="bi bi-exclamation-circle me-2"></i>
+                            Failed to load data. Please try again.
+                        </td>
+                    </tr>
+                `;
+                console.error('Error fetching overload data:', error);
+            }
+        });
+    }
+
+    // Function to update the overload table with data
+    function updateOverloadTable(data) {
+        const tableBody = document.getElementById('overloadTableBody');
+
+        if (!data || !data.devices || data.devices.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center">No data available</td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        data.devices.forEach(device => {
+            const difference = device.total_load_received - device.total_wattage_installed;
+            const statusClass = difference > 0 ? 'text-danger' : 'text-success';
+            const statusIcon = difference > 0 ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill';
+            const statusText = difference > 0 ? 'Overload' : 'Normal';
+
+            html += `
+                <tr>
+                    <td>${device.device_id}</td>
+                    <td>${device.total_wattage_installed} W</td>
+                    <td>${device.total_load_received} W</td>
+                    <td class="${statusClass}">${difference > 0 ? '+' : ''}${difference} W</td>
+                    <td class="${statusClass}">
+                        <i class="bi ${statusIcon} me-1"></i> ${statusText}
+                    </td>
+                </tr>
+            `;
+        });
+
+        tableBody.innerHTML = html;
     }
 
     // Get chart canvas
