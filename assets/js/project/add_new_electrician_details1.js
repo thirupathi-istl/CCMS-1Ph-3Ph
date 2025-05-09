@@ -61,12 +61,10 @@ function fetchDeviceList1(group_name) {
                 data.forEach(device => {
                     selectElement.append(`<option value="${device.D_ID}">${device.D_NAME}</option>`);
                 });
-                $("#selected_count1").text("0");
+                $("#selected_count").text("0");
             } else {
                 console.error("Invalid data format received.");
             }
-            // Ensure the count is updated after populating
-            // updateSelectedCount();
         },
         error: function (xhr, status, error) {
             console.error("AJAX Error: ", status, error);
@@ -78,7 +76,7 @@ function fetchDeviceList1(group_name) {
 var interval_Id;
 //setTimeout(refresh_data, 50);
 
-// interval_Id=setInterval(refresh_data, 60000);
+interval_Id = setInterval(refresh_data, 60000);
 function refresh_data() {
 
     let group_name = document.getElementById('group-list').value;
@@ -227,7 +225,7 @@ $("#electrician_list").change(function () {
 
 function updateElectricionListTable(data) {
     let tableHTML = `<table class="table text-center table-bordered w-100 SimListSearch">
-        <thead class="sticky-top bg-white">
+        <thead>
             <tr>
                 <th class="table-header1-row-1" style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
                     <div class="d-flex align-items-center justify-content-center gap-2">
@@ -235,7 +233,7 @@ function updateElectricionListTable(data) {
                         <span>All</span>
                     </div>
                 </th>
-                <th class="table-header1-row-1">Electrician Name</th>
+                <th class="table-header1-row-1" >Electrician Name</th>
                 <th class="table-header1-row-1">Phone</th>
                 <th class="table-header1-row-1">Actions</th>
             </tr>
@@ -253,12 +251,13 @@ function updateElectricionListTable(data) {
                 <td>
                     <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
                         <button class="btn btn-danger btn-sm remove-access" onclick="removeElectrician(${electrician.id}, '${electrician.name}', '${electrician.phone}')">Remove</button>
+                      
                     </div>
                 </td>
             </tr>`;
         });
     } else {
-        tableHTML += `<tr><td colspan="4" class="text-center">No electricians assigned to this group.</td></tr>`;
+        tableHTML += `<tr><td colspan="3" class="text-center">No electricians assigned to this group.</td></tr>`;
     }
 
     tableHTML += `</tbody></table>`;
@@ -307,57 +306,194 @@ function setupCheckboxListenersList() {
 //     }
 // }
 
-let selectedElectrician = {};
-
+// Global variables to store current electrician being removed
+let currentElectricianId = 0;
+let currentElectricianName = '';
+let currentElectricianPhone = '';
 function removeElectrician(electricianId, electricianName, electricianPhone) {
-    selectedElectrician = { electricianId, electricianName, electricianPhone };
-    const removeModal = new bootstrap.Modal(document.getElementById('removeElectricianModal'));
-    removeModal.show();
-}
+    // Store the electrician details in global variables or data attributes to use later
+    currentElectricianId = electricianId;
+    currentElectricianName = electricianName;
+    currentElectricianPhone = electricianPhone;
 
-document.getElementById('confirmRemoveElectrician').addEventListener('click', function () {
-    const { electricianId, electricianName, electricianPhone } = selectedElectrician;
-
-    fetch("../add_new_electrician_devices/code/remove_electrician.php", {
+    // Fetch the devices assigned to this electrician
+    fetch("../add_new_electrician_devices/code/get_electrician_devices.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `electrician_id=${encodeURIComponent(electricianId)}&electricianName=${encodeURIComponent(electricianName)}&electricianPhone=${encodeURIComponent(electricianPhone)}`
+        body: `electrician_name=${encodeURIComponent(electricianName)}&electrician_phone=${encodeURIComponent(electricianPhone)}`
     })
         .then(response => response.json())
         .then(data => {
-            alert(data.message);
-            refresh_data();
-            toggleRemoveAllButtonList();
-            const removeModal = bootstrap.Modal.getInstance(document.getElementById('removeElectricianModal'));
-            removeModal.hide();
+            // Populate the table with devices
+            populateElectricianDevicesTable(data.devices);
+
+            // Update the modal title to include the electrician's name
+            document.getElementById("removeElectricianlistModalLabel").textContent = `Remove Electrician: ${electricianName}`;
+
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('removeElectricianlistModal'));
+            modal.show();
         })
-        .catch(error => console.error("Error removing electrician:", error));
-});
+        .catch(error => console.error("Error fetching electrician devices:", error));
+}
 
-
-
+function showDevicesForMultipleElectricians(selectedIds) {
+    // Get selected electrician IDs and names
+    const selectedElectricians = Array.from(document.querySelectorAll(".row-checkbox-list:checked"))
+        .map(cb => {
+            const row = cb.closest('tr');
+            return {
+                id: parseInt(cb.value),
+                name: row.cells[1].textContent, // Name is in the second column
+                phone: row.cells[2].textContent // Phone is in the third column
+            };
+        });
+    
+    if (selectedElectricians.length === 0) {
+        alert("No electricians selected");
+        return;
+    }
+    
+    // Update the modal title
+    document.getElementById("removeElectricianlistModalLabel").textContent = 
+        `Remove Multiple Electricians (${selectedElectricians.length})`;
+    
+    // Fetch devices for all selected electricians
+    Promise.all(selectedElectricians.map(electrician => 
+        fetch("../add_new_electrician_devices/code/get_electrician_devices.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `electrician_name=${encodeURIComponent(electrician.name)}&electrician_phone=${encodeURIComponent(electrician.phone)}`
+        })
+        .then(response => response.json())
+    ))
+    .then(results => {
+        // Combine all devices from all electricians
+        const allDevices = [];
+        results.forEach((result, index) => {
+            if (result.devices && result.devices.length > 0) {
+                // Add electrician name to each device for clarity
+                const devices = result.devices.map(device => {
+                    return {
+                        ...device,
+                        electrician_name: selectedElectricians[index].name
+                    };
+                });
+                allDevices.push(...devices);
+            }
+        });
+        
+        // Populate the modal with all devices
+        populateElectricianDevicesTable(allDevices);
+        
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('removeElectricianlistModal'));
+        modal.show();
+        
+        // Store the selected IDs for later use
+        window.selectedElectricianIds = selectedIds;
+    })
+    .catch(error => console.error("Error fetching devices for multiple electricians:", error));
+}
 function RemoveAllElectricions() {
     const selectedIds = Array.from(document.querySelectorAll(".row-checkbox-list:checked"))
         .map(cb => parseInt(cb.value));
 
-    if (selectedIds.length === 0) return;
+    if (selectedIds.length === 0) {
+        alert("No electricians selected");
+        return;
+    }
 
-    if (confirm("Are you sure you want to remove all selected electricians?")) {
+    // Show devices before confirmation
+    showDevicesForMultipleElectricians(selectedIds);
+}
+function removeTheElectrician() {
+    // Check if we're removing a single electrician or multiple
+    if (window.selectedElectricianIds && window.selectedElectricianIds.length > 0) {
+        // Multiple electricians
         fetch("../add_new_electrician_devices/code/remove_electrician.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `electrician_ids=${encodeURIComponent(JSON.stringify(selectedIds))}`
+            body: `electrician_ids=${encodeURIComponent(JSON.stringify(window.selectedElectricianIds))}`
         })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message);
-                refresh_data();
-                toggleRemoveAllButtonList(); // Disable the button after refresh
-
-
-            })
-            .catch(err => console.error("Error removing electricians:", err));
+        .then(res => res.json())
+        .then(data => {
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('removeElectricianlistModal'));
+            modal.hide();
+            
+            // Show success message
+            alert(data.message);
+            
+            // Refresh the list
+            refresh_data();
+            toggleRemoveAllButtonList();
+            
+            // Clear the stored IDs
+            window.selectedElectricianIds = null;
+        })
+        .catch(err => console.error("Error removing electricians:", err));
+    } else {
+        // Single electrician
+        fetch("../add_new_electrician_devices/code/remove_electrician.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `electrician_id=${encodeURIComponent(currentElectricianId)}&electricianName=${encodeURIComponent(currentElectricianName)}&electricianPhone=${encodeURIComponent(currentElectricianPhone)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('removeElectricianlistModal'));
+            modal.hide();
+            
+            // Show success message
+            alert(data.message);
+            
+            // Refresh the electricians list
+            refresh_data();
+            toggleRemoveAllButtonList();
+        })
+        .catch(error => console.error("Error removing electrician:", error));
     }
+}
+function populateElectricianDevicesTable(devices) {
+    const tableBody = document.querySelector("#devicesTable tbody");
+    let tableContent = '';
+
+    // Clear any existing warning message first
+    const existingWarning = document.querySelector(".alert.alert-warning");
+    if (existingWarning) {
+        existingWarning.remove();
+    }
+
+    if (devices && devices.length > 0) {
+        devices.forEach(device => {
+            tableContent += `<tr>
+                <td>${device.device_id}</td>
+                <td>${device.electrician_name}</td>
+                <td>${device.group_area}</td>
+            </tr>`;
+        });
+    } else {
+        tableContent = `<tr><td colspan="3" class="text-center">No devices assigned to selected electrician(s).</td></tr>`;
+    }
+
+    tableBody.innerHTML = tableContent;
+
+    // Add warning message above the table
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'alert alert-warning mb-3';
+    
+    // Check if we're removing multiple electricians
+    if (window.selectedElectricianIds && window.selectedElectricianIds.length > 1) {
+        warningDiv.innerHTML = '<strong>Warning!</strong> Removing these electricians will revoke their access to all devices shown below. Please reassign these devices to other electricians before proceeding with deletion.';
+    } else {
+        warningDiv.innerHTML = '<strong>Warning!</strong> Removing this electrician will revoke their access to all devices shown below. Please reassign these devices to another electrician before proceeding with deletion.';
+    }
+
+    // Add warning to the modal
+    const tableParent = document.querySelector("#devicesTable").parentNode;
+    tableParent.insertBefore(warningDiv, tableParent.firstChild);
 }
 
 function fetchElectricianDevices(electrician_name) {
@@ -417,95 +553,45 @@ function removeDevice(device_id) {
     }
 }
 
-// document.addEventListener("DOMContentLoaded", function () {
-//     const selectAllCheckbox = document.getElementById("select_all1");
-//     const deviceSelect = document.getElementById("multi_selection_device_id1");
-//     const selectedCountSpan = document.getElementById("selected_count1");
+document.addEventListener("DOMContentLoaded", function () {
+    const selectAllCheckbox = document.getElementById("select_all1");
+    const deviceSelect = document.getElementById("multi_selection_device_id1");
+    const selectedCountSpan = document.getElementById("selected_count1");
 
-//     // Make sure the select has the multiple attribute set
-//     deviceSelect.setAttribute("multiple", "multiple");
-    
-//     // Track scroll position
-//     let lastScrollTop = 0;
-    
-//     // Function to update the selected count
-//     function updateSelectedCount() {
-//         const selectedOptions = Array.from(deviceSelect.options).filter(option => option.selected);
-//         selectedCountSpan.textContent = selectedOptions.length;
+    // Function to update the selected count
+    function updateSelectedCount() {
+        const selectedOptions = Array.from(deviceSelect.options).filter(option => option.selected);
+        selectedCountSpan.textContent = selectedOptions.length;
 
-//         // If all options are selected manually, check the select all box
-//         selectAllCheckbox.checked = selectedOptions.length === deviceSelect.options.length && deviceSelect.options.length > 0;
-//     }
+        // If all options are selected manually, check the select all box
+        selectAllCheckbox.checked = selectedOptions.length === deviceSelect.options.length;
+    }
 
-//     // Save scroll position before any interaction
-//     deviceSelect.addEventListener("mousedown", function() {
-//         lastScrollTop = deviceSelect.scrollTop;
-//     });
-    
-//     // Custom click handler for individual selections that preserves multiple selection
-//     deviceSelect.addEventListener("click", function(e) {
-//         if (e.target.tagName === "OPTION") {
-//             // The browser's default implementation handles the selection toggling
-            
-//             // Restore scroll position after the browser has processed the click
-//             setTimeout(() => {
-//                 deviceSelect.scrollTop = lastScrollTop;
-//                 updateSelectedCount();
-//             }, 0);
-//         }
-//     });
-    
-//     // Handle selection changes via keyboard (up/down arrows)
-//     deviceSelect.addEventListener("keyup", function() {
-//         updateSelectedCount();
-//     });
+    // Event listener for Select All checkbox
+    selectAllCheckbox.addEventListener("change", function () {
+        const options = deviceSelect.options;
+        for (let i = 0; i < options.length; i++) {
+            options[i].selected = this.checked;
+        }
+        updateSelectedCount();
+    });
 
-//     // Event listener for Select All checkbox
-//     selectAllCheckbox.addEventListener("change", function () {
-//         // Save scroll position
-//         lastScrollTop = deviceSelect.scrollTop;
-        
-//         const options = deviceSelect.options;
-//         for (let i = 0; i < options.length; i++) {
-//             options[i].selected = this.checked;
-//         }
-        
-//         // Restore scroll position
-//         setTimeout(() => {
-//             deviceSelect.scrollTop = lastScrollTop;
-//             updateSelectedCount();
-//         }, 0);
-//     });
+    // Event listener for manual selection (ensuring multiple selection works)
+    deviceSelect.addEventListener("change", function () {
+        updateSelectedCount();
+    });
 
-//     // Fix for fetchDeviceList1 function to work with this implementation
-//     window.fetchDeviceList1 = function(group_name) {
-//         $.ajax({
-//             type: "POST",
-//             url: '../add_new_electrician_devices/code/fetch_multiple_devices.php',
-//             data: { GROUP_ID: group_name },
-//             dataType: "json",
-//             success: function (data) {
-//                 let selectElement = $("#multi_selection_device_id1");
-//                 selectElement.empty();
-//                 if (Array.isArray(data)) {
-//                     data.forEach(device => {
-//                         selectElement.append(`<option value="${device.D_ID}">${device.D_NAME}</option>`);
-//                     });
-//                     $("#selected_count1").text("0");
-//                     updateSelectedCount();
-//                 } else {
-//                     console.error("Invalid data format received.");
-//                 }
-//             },
-//             error: function (xhr, status, error) {
-//                 console.error("AJAX Error: ", status, error);
-//             }
-//         });
-//     };
+    // Allow Ctrl + Click or Shift + Click for multiple selections
+    deviceSelect.addEventListener("mousedown", function (e) {
+        e.preventDefault(); // Prevent default selection behavior
+        const option = e.target;
 
-//     // Initialize the count
-//     updateSelectedCount();
-// });
+        if (option.tagName === "OPTION") {
+            option.selected = !option.selected; // Toggle selection state
+            updateSelectedCount();
+        }
+    });
+});
 
 // document.addEventListener("DOMContentLoaded", function () {
 //     function fetchElectricians(deviceId) {
@@ -1111,7 +1197,11 @@ document.getElementById("updateElectrician").addEventListener("click", function 
 // if (defaultDeviceId) {
 //     fetchElectricians(defaultDeviceId);
 // }
+document.addEventListener("DOMContentLoaded", function () {
+    var group_id = document.getElementById('group-list').value;
 
+    fetchElectricians(group_id);
+});
 // Function to filter the table based on search input
 // Function to filter the table based on the search input
 var interval_Id_1 = interval_Id;
@@ -1164,7 +1254,7 @@ document.getElementById("searchBar").addEventListener("input", function () {
 
         refresh_data(group_name);
 
-        // interval_Id1 = setInterval(refresh_data, 60000); // Restart interval
+        interval_Id1 = setInterval(refresh_data, 60000); // Restart interval
 
     }
 });

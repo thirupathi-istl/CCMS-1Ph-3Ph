@@ -29,19 +29,22 @@
 													$count = 0;
 													$r = mysqli_fetch_assoc($result);
 
-                                                    // Loop through each permission field and create form elements accordingly
+													// Loop through each permission field and create form elements accordingly
 													$permission_fields = [
+														'device_dashboard' => 'Device Overview',
 														'dashboard' => 'Dashboard Access',
 														'devices_list' => 'Devices List',
 														'onoff_control' => 'ON/OFF Control',
 														'gis_map' => 'GIS Map',
 														'data_report' => 'Data Report',
+														'energy_consumption' => 'Energy Consumption',
 														'thresholdsettings' => 'Threshold Settings',
 														'group_creation' => 'Group Creation',
 														'location_update' => 'Location Update',
 														'notification_settings' => 'Notification Settings',
 														'iotsettings' => 'IoT Settings',
 														'pending_actions' => 'Pending Actions',
+														'add_new_electrician_devices' => 'Add New Electrician Devices',
 														'phase_alerts' => 'Phase Alerts',
 														'alerts' => 'Alerts',
 														'notification_mesages' => 'Notification Messages',
@@ -86,7 +89,7 @@
 											mysqli_close($conn);
 										}
 									} catch (Exception $e) {
-                                        // Handle exception
+										// Handle exception
 									}
 									?>
 								</form>

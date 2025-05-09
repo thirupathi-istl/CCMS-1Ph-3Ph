@@ -91,10 +91,21 @@ document.getElementById("addButtonSearch").addEventListener("input", addButtonSe
 catch (e) {
    
 }
-
+var interval_Id1 =interval_Id ;
 //search script device list dastboard
 function deviceListSearch() {
+    clearInterval(interval_Id);
     var input = document.getElementById("deviceListInput").value.toLowerCase().trim();
+    
+    // Only start searching if input has at least 3 characters
+    // if (input.length < 4) {
+    //     document.querySelectorAll(".deviceListSearch tbody tr").forEach(row => {
+    //         row.style.display = ""; // Show all rows when input is less than 3 characters
+    //         row.classList.remove("highlight");
+    //     });
+    //     return;
+    // }
+
     var rows = document.querySelectorAll(".deviceListSearch tbody tr");
 
     rows.forEach(row => {
@@ -102,13 +113,11 @@ function deviceListSearch() {
         var match = false;
 
         cells.forEach(cell => {
-            // Check if any cell in the row contains the input
             if (cell.innerText.toLowerCase().includes(input)) {
                 match = true;
             }
         });
 
-        // Show or hide the row based on match
         if (match) {
             row.style.display = ""; // Show matching rows
             row.classList.add("highlight");
@@ -119,9 +128,27 @@ function deviceListSearch() {
     });
 }
 
+document.getElementById("deviceListInput").addEventListener("input", function () {
+   // Call the search function on every input change
+
+    // Restart the interval if input is cleared
+    if (this.value.trim() === "") {
+        // clearInterval(interval_Id); // Clear any existing interval
+        let group_name = group_list.value;
+
+        refresh_data(group_name);
+
+        interval_Id1 = setInterval(refresh_data, 60000); // Restart interval
+
+    }
+});
+
 // Add event listener for input events
-try {
-    document.getElementById("deviceListInput").addEventListener("input", deviceListSearch);
-} catch (e) {
-   
-}
+// try {
+//     document.getElementById("deviceListInput").addEventListener("input", deviceListSearch);
+// } catch (e) {
+//     console.error("Error attaching event listener: ", e);
+// }
+
+
+

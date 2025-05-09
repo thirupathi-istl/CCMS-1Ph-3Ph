@@ -355,21 +355,21 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['UPDATE'] === "NEW_USER"
         $error_message .= "at least 8 characters, ";
     }
 
-    if (!preg_match('/[A-Z]/', $newPassword)) {
-        $error_message .= "an uppercase letter, ";
-    }
+    // if (!preg_match('/[A-Z]/', $newPassword)) {
+    //     $error_message .= "an uppercase letter, ";
+    // }
 
-    if (!preg_match('/[a-z]/', $newPassword)) {
-        $error_message .= "a lowercase letter, ";
-    }
+    // if (!preg_match('/[a-z]/', $newPassword)) {
+    //     $error_message .= "a lowercase letter, ";
+    // }
 
-    if (!preg_match('/[0-9]/', $newPassword)) {
-        $error_message .= "a number, ";
-    }
+    // if (!preg_match('/[0-9]/', $newPassword)) {
+    //     $error_message .= "a number, ";
+    // }
 
-    if (!preg_match('/[\W_]/', $newPassword)) {
-        $error_message .= "a special character, ";
-    }
+    // if (!preg_match('/[\W_]/', $newPassword)) {
+    //     $error_message .= "a special character, ";
+    // }
 
     if (!empty($error_message)) {
         $error_message = rtrim($error_message, ", ");

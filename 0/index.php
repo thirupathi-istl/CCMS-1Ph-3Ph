@@ -10,20 +10,20 @@ SessionManager::checkSession();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device Dashboard</title>
-<!-- Bootstrap CSS -->
-<!-- Bootstrap JavaScript -->
+    <!-- Bootstrap CSS -->
+    <!-- Bootstrap JavaScript -->
 
     <style>
         /* Custom styles to complement Bootstrap */
 
 
         .chart-container {
-            height: 120px;
+            height: 150px;
             position: relative;
         }
 
         .updates-container {
-            max-height: 700px;
+            max-height: 800px;
             overflow-y: auto;
         }
 
@@ -70,7 +70,7 @@ SessionManager::checkSession();
             display: flex;
             align-items: center;
             gap: 16px;
-            border-top: 1px solid #f3f4f6;
+            /* border-top: 1px solid #f3f4f6; */
             padding-top: 8px;
             flex-wrap: wrap;
             /* Allow wrapping for small screens */
@@ -116,59 +116,10 @@ SessionManager::checkSession();
             }
         }
 
-        /* .update-item {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            display: flex;
-            align-items: flex-start;
-        } */
 
-        /* .update-icon {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        .update-content {
-            flex: 1;
-        }
-
-        .update-message {
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .update-timestamp {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-
-        .update-warning {
-            background-color: rgba(255, 193, 7, 0.1);
-        }
-
-        .update-info {
-            background-color: rgba(13, 110, 253, 0.1);
-        }
-
-        .update-success {
-            background-color: rgba(25, 135, 84, 0.1);
-        } */
-
-        /* Make sure cards have consistent height */
-        /* .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        } */
-
-        /* Responsive adjustments */
-        /* @media (min-width: 992px) {
-            .col-lg-4 {
-                order: 4;
-            }
-        } */
 
         .map-container {
-            height: 300px;
+            height: 400px;
             background-color: #f1f5f9;
             border-radius: 0.5rem;
             margin-bottom: 0.5rem;
@@ -181,159 +132,196 @@ SessionManager::checkSession();
     <?php
     include(BASE_PATH . "assets/html/start-page.php");
     ?>
-    <div class="d-flex flex-column flex-shrink-0 p-3 main-content">
+    <div class="d-flex flex-column flex-shrink-0 p-3 main-content ">
         <div class="container-fluid">
-            <div class="row d-flex align-items-center">
+            <div class="row d-flex align-items-center mb-2">
                 <div class="col-12 p-0">
                     <p class="m-0 p-0"><span class="text-body-tertiary">Pages / </span><span>Device Dashboard</span></p>
                 </div>
             </div>
 
+
             <?php include(BASE_PATH . "dropdown-selection/device-list.php"); ?>
 
-            <div class="container-fluid py-4">
-                <div class="row">
-                    <!-- Left Section (Cards + Map) -->
-                    <div class="col-lg-8">
-                        <div class="row g-3">
-                            <!-- Lights Card -->
-                            <div class="col-sm-12 col-md-6 col-lg-4">
-                                <div class="card h-100">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Lights</h5>
-                                    </div>
-                                    <div class="card-body d-flex flex-column pointer">
-                                        <div class="text-center mb-3">
-                                            <h2 id="total-lights">1250</h2>
-                                            <p class="text-muted mb-3">Total Lights Installed</p>
-                                            <div class="row g-2">
-                                                <div class="col-6">
-                                                    <div class="p-2 bg-success bg-opacity-10 rounded">
-                                                        <h4 id="lights-on-percentage" class="text-success mb-0">78%</h4>
-                                                        <small>On</small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="p-2 bg-danger bg-opacity-10 rounded">
-                                                        <h4 id="lights-off-percentage" class="text-danger mb-0">22%</h4>
-                                                        <small>Off</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="chart-container mt-auto">
-                                            <canvas id="lights-chart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- CCMS Devices Card -->
-                            <div class="col-sm-12 col-md-6 col-lg-4">
-                                <div class="card h-100">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">CCMS Devices</h5>
-                                    </div>
-                                    <div class="card-body d-flex flex-column pointer">
-                                        <div class="text-center mb-3">
-                                            <h2 id="total-ccms">45</h2>
-                                            <p class="text-muted mb-3">Total CCMS Devices</p>
-                                            <div class="row g-2">
-                                                <div class="col-6">
-                                                    <div class="p-2 bg-success bg-opacity-10 rounded cursor-pointer" onclick="activeModal()">
-                                                        <h4 id="ccms-on" class="text-success mb-0">38</h4>
-                                                        <small>Online</small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="p-2 bg-danger bg-opacity-10 rounded cursor-pointer" onclick="openNonActiveModal()">
-                                                        <h4 id="ccms-off" class="text-danger mb-0">7</h4>
-                                                        <small>Offline</small>
-                                                    </div>
-                                                </div>
-                                            </div>
+            <div class="row mt-3">
+                <!-- Left Section (Cards + Map) -->
+                <div class="col-lg-8">
+                    <div class="row pe-0 pe-lg-2 h-100">
+                        <div class="col-12 rounded mt-2 p-0 ">
+                            <div class="row g-3">
+                                <!-- Lights Card -->
+                                <div class="col-sm-12 col-md-6 col-lg-4">
+                                    <div class="card h-100">
+                                        <div class="card-header d-flex align-items-center">
+                                            <h6 class="card-title mb-0 fw-semibold">
+                                                <i class="bi bi-brightness-high me-2"></i>Lights
+                                            </h6>
                                         </div>
-                                        <div class="chart-container mt-auto">
-                                            <canvas id="ccms-chart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Connected Load Card -->
-                            <div class="col-sm-12 col-md-6 col-lg-4">
-                                <div class="card h-100">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Connected Load</h5>
-                                    </div>
-                                    <div class="card-body d-flex flex-column pointer">
-                                        <div class="text-center mb-3">
-                                            <h2 id="cumulative-load">2.5 W</h2>
-                                            <p class="text-muted mb-3">Installed Load</p>
-                                            <div class="row g-2">
-                                                <div class="col-6">
-                                                    <div class="p-2 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-90 text-center">
-                                                        <div>
-                                                            <h4 id="installed-load" class="text-primary mb-0">3.2 W</h4>
-                                                            <small>Active Load</small>
+
+                                        <div class="card-body d-flex flex-column ">
+                                            <div class="text-center mb-3">
+                                                <h2 id="total-lights">1250</h2>
+                                                <p class="text-muted mb-3">Total Lights Installed</p>
+                                                <div class="row g-2">
+                                                    <div class="col-6">
+                                                        <div class="p-2 bg-success bg-opacity-10 rounded">
+                                                            <h4 id="lights-on-percentage" class="text-success-emphasis mb-0">78%</h4>
+                                                            <small>On</small>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-6" id="inactive-load-container">
-                                                    <div class="p-2 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-100 text-center">
-                                                        <div>
-                                                            <h4 id="active-load" class="text-secondary mb-0"></h4>
-                                                            <small>Inactive Load</small>
+                                                    <div class="col-6">
+                                                        <div class="p-2 bg-danger bg-opacity-10 rounded">
+                                                            <h4 id="lights-off-percentage" class="text-danger mb-0">22%</h4>
+                                                            <small>Off</small>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="chart-container mt-auto">
+                                                <canvas id="lights-chart"></canvas>
+                                            </div>
                                         </div>
-                                        <div class="chart-container mt-auto">
-                                            <canvas id="load-chart"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- CCMS Devices Card -->
+                                <div class="col-sm-12 col-md-6 col-lg-4">
+                                    <div class="card h-100">
+                                        <div class="card-header d-flex align-items-center">
+                                            <h6 class="card-title mb-0 fw-semibold">
+                                                <i class="bi bi-cpu me-2"></i>CCMS Devices
+                                            </h6>
+                                        </div>
+
+                                        <div class="card-body d-flex flex-column pointer">
+                                            <div class="text-center mb-3">
+                                                <h2 id="total-ccms">45</h2>
+                                                <p class="text-muted mb-3">Total CCMS Devices</p>
+                                                <div class="row g-2">
+                                                    <div class="col-6">
+                                                        <div class="p-2 bg-success bg-opacity-10 rounded cursor-pointer" onclick="activeModal()">
+                                                            <h4 id="ccms-on" class="text-success-emphasis mb-0">38</h4>
+                                                            <small>Active</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="p-2 bg-danger bg-opacity-10 rounded cursor-pointer" onclick="openNonActiveModal()">
+                                                            <h4 id="ccms-off" class="text-danger mb-0">7</h4>
+                                                            <small>InActive</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="chart-container mt-auto">
+                                                <canvas id="ccms-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Connected Load Card -->
+                                <div class="col-sm-12 col-md-6 col-lg-4">
+                                    <div class="card h-100">
+                                        <div class="card-header d-flex align-items-center">
+                                            <h6 class="card-title mb-0 fw-semibold">
+                                                <i class="bi bi-lightning-charge-fill me-2"></i>Connected Load (kW)
+                                            </h6>
+                                        </div>
+
+
+                                        <div class="card-body d-flex flex-column ">
+                                            <div class="text-center mb-3">
+                                                <h2 id="cumulative-load"></h2>
+                                                <p class="text-muted mb-3">Installed Load</p>
+                                                <div class="row g-2">
+                                                    <!-- Active Load -->
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="p-2 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-100 text-center">
+                                                            <div>
+                                                                <h4 id="installed-load" class="text-primary mb-0"></h4>
+                                                                <small>Active Load</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Inactive Load -->
+                                                    <div class="col-12 col-md-6" id="inactive-load-container">
+                                                        <!-- Content injected by JS -->
+                                                        <div class="p-2 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center h-100 text-center">
+                                                            <div>
+                                                                <h4 id="active-load" class="text-secondary mb-0"></h4>
+                                                                <small>Inactive Load</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="chart-container mt-auto">
+                                                <canvas id="load-chart"></canvas>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Device Map -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title mb-0">Device Map</h5>
-                                        <select class="form-select pointer" id="locationsDropdown" style="width: auto;"></select>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="map-container" id="map"></div>
-                                        <div class="col-12 mt-2">
-                                            <small>* <i class="bi bi-geo-alt-fill text-danger"></i> Lights are Turned OFF</small>
-                                            <small>* <i class="bi bi-geo-alt-fill text-success"></i> Lights are turned ON</small>
-                                            <small>* <i class="bi bi-geo-alt-fill text-warning"></i> Poor Network Units</small>
-                                            <small>* <i class="bi bi-geo-alt-fill text-purple"></i> Communication Loss Units</small>
-                                            <small>* <i class="bi bi-geo-alt-fill text-primary"></i> Power Fail Units</small>
+                            <!-- Device Map -->
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+                                                <!-- Title -->
+                                                <h6 class="card-title mb-2 mb-sm-0">
+                                                    <i class="bi bi-geo-alt-fill"></i> Device Map
+                                                </h6>
+
+                                                <!-- Controls container - same line on larger screens -->
+                                                <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+                                                    <button type="button" class="btn btn-primary btn-sm" onclick="refreshMap()">
+                                                        Refresh
+                                                    </button>
+                                                    <select class="form-select form-select-sm" id="locationsDropdown" style="min-width: 150px;"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body p-0">
+
+                                            <div class="map-container" id="map"></div>
+                                            <div class="col-12 mt-2">
+                                                <small>* <i class="bi bi-geo-alt-fill text-danger"></i> Lights are Turned OFF</small>
+                                                <small>* <i class="bi bi-geo-alt-fill text-success"></i> Lights are turned ON</small>
+                                                <small>* <i class="bi bi-geo-alt-fill text-warning"></i> Poor Network Units</small>
+                                                <small>* <i class="bi bi-geo-alt-fill text-purple"></i> Communication Loss Units</small>
+                                                <small>* <i class="bi bi-geo-alt-fill text-primary"></i> Power Fail Units</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Updates Panel -->
-                    <div class="col-lg-4">
-                        <div class="card h-100">
-                            <div class="card-header fw-bold">
-                                <i class="bi bi-chat-dots-fill"></i> Updates
-                            </div>
-                            <div class="card-body">
-                                <div class="updates-container list-group overflow-y-auto" id="updates-container"></div>
+                </div>
+                <!-- Updates Panel -->
+                <div class="col-lg-4">
+                    <div class="row ps-0 ps-lg-2 h-100">
+                        <div class="col-12 rounded mt-4 mt-lg-2 p-0">
+                            <div class="card h-100">
+                                <div class="card-header fw-bold">
+                                    <i class="bi bi-chat-dots-fill"></i> Updates
+                                </div>
+                                <div class="card-body">
+                                    <div class="updates-container list-group overflow-y-auto" id="updates-container"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     </div>
@@ -343,9 +331,7 @@ SessionManager::checkSession();
     <?php
     include(BASE_PATH . "dashboard/dashboard_modals.php");
     ?>
-</body>
 
-</html>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvlom5_AlCYoIgXu94yl_VyRRRBc0xSFQ&callback=initMap" async defer></script>
 <script src="<?php echo BASE_PATH; ?>assets/js/sidebar-menu.js"></script>
 <script src="<?php echo BASE_PATH; ?>assets/js/project/map.js"></script>

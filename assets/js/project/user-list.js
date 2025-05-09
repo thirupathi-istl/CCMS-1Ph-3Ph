@@ -31,10 +31,10 @@
   function addUser() {
     const modal = new bootstrap.Modal(document.getElementById('adduser'));
     document.getElementById('password').value="";
-    var strengthDiv=document.getElementById('passwordStrength');
-    strengthDiv.textContent = "Password must include: at least 8 characters, an uppercase letter, a lowercase letter, a number, a special character";
-    strengthDiv.classList.remove("text-success");
-    strengthDiv.classList.add("text-danger-emphasis");
+    // var strengthDiv=document.getElementById('passwordStrength');
+    // strengthDiv.textContent = "Password must include: at least 8 characters, an uppercase letter, a lowercase letter, a number, a special character";
+    // strengthDiv.classList.remove("text-success");
+    // strengthDiv.classList.add("text-danger-emphasis");
     modal.show();
   }
 
@@ -299,16 +299,16 @@ function adding_new_user() {
   const confirmpassword = document.getElementById('confirmpassword').value.trim();
   const mismatchDiv = document.getElementById('passwordMismatch');
 
-  if (password !== "" && confirmpassword !== "") {
-    if (mismatchDiv.style.display === 'block' || !document.getElementById('passwordStrength').textContent.includes('Strong Password')) {
-      alert('Please ensure the passwords match and meet the strength requirements.');
-      allFieldsValid = false;
-    }
-  } else {
-    mismatchDiv.style.display = 'block';
-    mismatchDiv.textContent = 'Both password fields are required';
-    allFieldsValid = false;
-  }
+  // if (password !== "" && confirmpassword !== "") {
+  //   if (mismatchDiv.style.display === 'block' || !document.getElementById('passwordStrength').textContent.includes('Strong Password')) {
+  //     alert('Please ensure the passwords match and meet the strength requirements.');
+  //     allFieldsValid = false;
+  //   }
+  // } else {
+  //   mismatchDiv.style.display = 'block';
+  //   mismatchDiv.textContent = 'Both password fields are required';
+  //   allFieldsValid = false;
+  // }
 
   // If all fields are valid, proceed with form submission or further actions
   if (allFieldsValid) {
@@ -358,8 +358,8 @@ function validateEmail(email) {
   return emailPattern.test(email);
 }
 
-document.getElementById('password').addEventListener('keyup', validatePassword);
-document.getElementById('confirmpassword').addEventListener('keyup', checkPasswordMatch);
+// document.getElementById('password').addEventListener('keyup', validatePassword);
+// document.getElementById('confirmpassword').addEventListener('keyup', checkPasswordMatch);
 
 function validatePassword() {
   const password = document.getElementById('password').value;
@@ -522,7 +522,42 @@ function devicehandleSearch(){
   fetchUserDevices(userid_devices, 1, limit, search_device);
 
 }
+// function fetchUserDevicesSearch(userid_devices, page, limit, search_device) {
+//   $('#selectAll').prop('checked', false);
+//   document.getElementById('selected_count').textContent="0";
+//   $("#pre-loader").css('display', 'block'); 
+//   $.ajax({
+//     url: '../account/code/user-handling-devices-table.php',
+//     method: 'GET',
+//     data: { page: page, limit: limit, search_item:search_device, user_devices:userid_devices },
+//     success: function(response) {
+//       $("#pre-loader").css('display', 'none'); 
+//       let tableBody = $('#managing_devices_table');
+//       let pagination = $('#pagination-user-devices');
 
+//       tableBody.empty();
+//       pagination.empty();
+
+//             // Populate table
+//       if( response.totalPages>0)
+//       {
+//         response.data.forEach(item => {
+//           tableBody.append(`
+//           <tr>
+//           <td class="select-option"><input type="checkbox" class="selectDeviceForDelete pointer" onclick="fun_check()" /></td>
+//           <td>${item.device_id}</td>
+//           <td>${item.device_name}</td>
+//           <td>${item.device_group_or_area}</td>
+
+
+//           `);
+//         });
+//       }
+//       const totalPages = response.totalPages;
+//       pagination_fun(pagination, totalPages, page);
+//     }
+//   });
+// }
 function fetchUserDevices(userid_devices, page, limit, search_device) {
   $('#selectAll').prop('checked', false);
   document.getElementById('selected_count').textContent="0";
@@ -1019,7 +1054,7 @@ function addSelectedDevices() {
         alert("Invalid User ID. Please try again.");
         return;  // Stop the function if the userId is not a valid number
       }
-
+console.log(selectedMenuPermissions);
       if (confirm('Are you sure you want to update the user menu Permissions?')) {
         $("#pre-loader").css('display', 'block');
         $.ajax({
