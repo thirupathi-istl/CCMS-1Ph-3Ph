@@ -61,10 +61,12 @@ function fetchDeviceList1(group_name) {
                 data.forEach(device => {
                     selectElement.append(`<option value="${device.D_ID}">${device.D_NAME}</option>`);
                 });
-                $("#selected_count").text("0");
+                $("#selected_count1").text("0");
             } else {
                 console.error("Invalid data format received.");
             }
+            // Ensure the count is updated after populating
+            // updateSelectedCount();
         },
         error: function (xhr, status, error) {
             console.error("AJAX Error: ", status, error);
@@ -76,9 +78,9 @@ function fetchDeviceList1(group_name) {
 var interval_Id;
 //setTimeout(refresh_data, 50);
 
-interval_Id=setInterval(refresh_data, 60000);
+// interval_Id=setInterval(refresh_data, 60000);
 function refresh_data() {
-   
+
     let group_name = document.getElementById('group-list').value;
     if (group_name !== "" && group_name !== null) {
         fetchDeviceList(group_name);
@@ -225,7 +227,7 @@ $("#electrician_list").change(function () {
 
 function updateElectricionListTable(data) {
     let tableHTML = `<table class="table text-center table-bordered w-100 SimListSearch">
-        <thead>
+        <thead class="sticky-top bg-white">
             <tr>
                 <th class="table-header1-row-1" style="width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0; text-align: center; overflow: hidden;">
                     <div class="d-flex align-items-center justify-content-center gap-2">
@@ -233,7 +235,7 @@ function updateElectricionListTable(data) {
                         <span>All</span>
                     </div>
                 </th>
-                <th class="table-header1-row-1" >Electrician Name</th>
+                <th class="table-header1-row-1">Electrician Name</th>
                 <th class="table-header1-row-1">Phone</th>
                 <th class="table-header1-row-1">Actions</th>
             </tr>
@@ -251,13 +253,12 @@ function updateElectricionListTable(data) {
                 <td>
                     <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
                         <button class="btn btn-danger btn-sm remove-access" onclick="removeElectrician(${electrician.id}, '${electrician.name}', '${electrician.phone}')">Remove</button>
-                      
                     </div>
                 </td>
             </tr>`;
         });
     } else {
-        tableHTML += `<tr><td colspan="3" class="text-center">No electricians assigned to this group.</td></tr>`;
+        tableHTML += `<tr><td colspan="4" class="text-center">No electricians assigned to this group.</td></tr>`;
     }
 
     tableHTML += `</tbody></table>`;
@@ -416,45 +417,95 @@ function removeDevice(device_id) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const selectAllCheckbox = document.getElementById("select_all1");
-    const deviceSelect = document.getElementById("multi_selection_device_id1");
-    const selectedCountSpan = document.getElementById("selected_count1");
+// document.addEventListener("DOMContentLoaded", function () {
+//     const selectAllCheckbox = document.getElementById("select_all1");
+//     const deviceSelect = document.getElementById("multi_selection_device_id1");
+//     const selectedCountSpan = document.getElementById("selected_count1");
 
-    // Function to update the selected count
-    function updateSelectedCount() {
-        const selectedOptions = Array.from(deviceSelect.options).filter(option => option.selected);
-        selectedCountSpan.textContent = selectedOptions.length;
+//     // Make sure the select has the multiple attribute set
+//     deviceSelect.setAttribute("multiple", "multiple");
+    
+//     // Track scroll position
+//     let lastScrollTop = 0;
+    
+//     // Function to update the selected count
+//     function updateSelectedCount() {
+//         const selectedOptions = Array.from(deviceSelect.options).filter(option => option.selected);
+//         selectedCountSpan.textContent = selectedOptions.length;
 
-        // If all options are selected manually, check the select all box
-        selectAllCheckbox.checked = selectedOptions.length === deviceSelect.options.length;
-    }
+//         // If all options are selected manually, check the select all box
+//         selectAllCheckbox.checked = selectedOptions.length === deviceSelect.options.length && deviceSelect.options.length > 0;
+//     }
 
-    // Event listener for Select All checkbox
-    selectAllCheckbox.addEventListener("change", function () {
-        const options = deviceSelect.options;
-        for (let i = 0; i < options.length; i++) {
-            options[i].selected = this.checked;
-        }
-        updateSelectedCount();
-    });
+//     // Save scroll position before any interaction
+//     deviceSelect.addEventListener("mousedown", function() {
+//         lastScrollTop = deviceSelect.scrollTop;
+//     });
+    
+//     // Custom click handler for individual selections that preserves multiple selection
+//     deviceSelect.addEventListener("click", function(e) {
+//         if (e.target.tagName === "OPTION") {
+//             // The browser's default implementation handles the selection toggling
+            
+//             // Restore scroll position after the browser has processed the click
+//             setTimeout(() => {
+//                 deviceSelect.scrollTop = lastScrollTop;
+//                 updateSelectedCount();
+//             }, 0);
+//         }
+//     });
+    
+//     // Handle selection changes via keyboard (up/down arrows)
+//     deviceSelect.addEventListener("keyup", function() {
+//         updateSelectedCount();
+//     });
 
-    // Event listener for manual selection (ensuring multiple selection works)
-    deviceSelect.addEventListener("change", function () {
-        updateSelectedCount();
-    });
+//     // Event listener for Select All checkbox
+//     selectAllCheckbox.addEventListener("change", function () {
+//         // Save scroll position
+//         lastScrollTop = deviceSelect.scrollTop;
+        
+//         const options = deviceSelect.options;
+//         for (let i = 0; i < options.length; i++) {
+//             options[i].selected = this.checked;
+//         }
+        
+//         // Restore scroll position
+//         setTimeout(() => {
+//             deviceSelect.scrollTop = lastScrollTop;
+//             updateSelectedCount();
+//         }, 0);
+//     });
 
-    // Allow Ctrl + Click or Shift + Click for multiple selections
-    deviceSelect.addEventListener("mousedown", function (e) {
-        e.preventDefault(); // Prevent default selection behavior
-        const option = e.target;
+//     // Fix for fetchDeviceList1 function to work with this implementation
+//     window.fetchDeviceList1 = function(group_name) {
+//         $.ajax({
+//             type: "POST",
+//             url: '../add_new_electrician_devices/code/fetch_multiple_devices.php',
+//             data: { GROUP_ID: group_name },
+//             dataType: "json",
+//             success: function (data) {
+//                 let selectElement = $("#multi_selection_device_id1");
+//                 selectElement.empty();
+//                 if (Array.isArray(data)) {
+//                     data.forEach(device => {
+//                         selectElement.append(`<option value="${device.D_ID}">${device.D_NAME}</option>`);
+//                     });
+//                     $("#selected_count1").text("0");
+//                     updateSelectedCount();
+//                 } else {
+//                     console.error("Invalid data format received.");
+//                 }
+//             },
+//             error: function (xhr, status, error) {
+//                 console.error("AJAX Error: ", status, error);
+//             }
+//         });
+//     };
 
-        if (option.tagName === "OPTION") {
-            option.selected = !option.selected; // Toggle selection state
-            updateSelectedCount();
-        }
-    });
-});
+//     // Initialize the count
+//     updateSelectedCount();
+// });
 
 // document.addEventListener("DOMContentLoaded", function () {
 //     function fetchElectricians(deviceId) {
@@ -720,27 +771,27 @@ function fetchElectricians(group_id) {
 function setupPagination() {
     const totalItems = electriciansData.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
+
     // Update pagination controls
     const paginationEl = document.getElementById('pagination');
     let paginationHTML = '';
-    
+
     // Previous button
     paginationHTML += `
         <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
             <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Previous</a>
         </li>
     `;
-    
+
     // Page numbers
     const maxPages = 5; // Maximum number of page links to show
     let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
     let endPage = Math.min(totalPages, startPage + maxPages - 1);
-    
+
     if (endPage - startPage + 1 < maxPages) {
         startPage = Math.max(1, endPage - maxPages + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
         paginationHTML += `
             <li class="page-item ${currentPage === i ? 'active' : ''}">
@@ -748,18 +799,18 @@ function setupPagination() {
             </li>
         `;
     }
-    
+
     // Next button
     paginationHTML += `
         <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
             <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Next</a>
         </li>
     `;
-    
+
     paginationEl.innerHTML = paginationHTML;
-    
+
     // Update items per page dropdown event listener
-    document.getElementById('items-per-page').addEventListener('change', function() {
+    document.getElementById('items-per-page').addEventListener('change', function () {
         itemsPerPage = parseInt(this.value);
         currentPage = 1; // Reset to first page when changing items per page
         renderCurrentPage();
@@ -770,13 +821,13 @@ function setupPagination() {
 // Function to change the current page
 function changePage(newPage) {
     const totalPages = Math.ceil(electriciansData.length / itemsPerPage);
-    
+
     if (newPage >= 1 && newPage <= totalPages) {
         currentPage = newPage;
         renderCurrentPage();
         setupPagination();
     }
-    
+
     return false; // Prevent default action
 }
 
@@ -784,15 +835,15 @@ function changePage(newPage) {
 function renderCurrentPage() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, electriciansData.length);
-    
+
     const pageData = electriciansData.slice(startIndex, endIndex);
-    
+
     // Create paged data object to pass to updateElectricianTable
     const pagedData = {
         electricians: pageData,
         unassigned_devices: [] // Keep the unassigned devices as is
     };
-    
+
     updateElectricianTable(pagedData);
 }
 
@@ -813,7 +864,7 @@ function updateElectricianTable(data) {
                 <th class="table-header1-row-1">Actions</th>
             </tr>
         </thead>`;
-    
+
     let tableBody = '<tbody>';
 
     // Render electricians table
@@ -845,14 +896,14 @@ function updateElectricianTable(data) {
     }
 
     tableBody += '</tbody>';
-    
+
     document.getElementById("electricianTable").innerHTML = tableHeader + tableBody;
 
     // Update the count and range information
     const total = electriciansData.length;
     const start = total === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
     const end = Math.min(start + itemsPerPage - 1, total);
-    
+
     // You can add this element to your HTML to show the range
     // const rangeInfo = document.getElementById('range-info');
     // if (rangeInfo) {
@@ -872,9 +923,9 @@ function initializeItemsPerPage() {
 }
 
 // Add this to your document ready function
-$(document).ready(function() {
+$(document).ready(function () {
     // Your existing code...
-    
+
     // Initialize items per page value
     initializeItemsPerPage();
 });
@@ -1063,7 +1114,7 @@ document.getElementById("updateElectrician").addEventListener("click", function 
 
 // Function to filter the table based on search input
 // Function to filter the table based on the search input
-var interval_Id_1 =interval_Id ;
+var interval_Id_1 = interval_Id;
 
 function filterTable() {
     clearInterval(interval_Id);
@@ -1071,17 +1122,17 @@ function filterTable() {
     let searchTerm = document.getElementById("searchBar").value.toLowerCase(); // Get the search term
     let table = document.getElementById("electricianTable");
     let rows = table.getElementsByTagName("tr");
-    
+
     // Skip if there's no search term or no rows
     if (!rows.length) return;
 
     // Loop through all table rows and hide those that don't match the search term
     for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
         let cells = rows[i].getElementsByTagName("td");
-        
+
         // Make sure we have enough cells before accessing them
         if (cells.length < 3) continue;
-        
+
         // cells[1] is Device-ID, cells[2] is Electrician Name
         let deviceID = cells[1].textContent.toLowerCase();
         let electricianName = cells[2].textContent.toLowerCase();
@@ -1102,7 +1153,7 @@ function filterTable() {
 
 
 document.getElementById("searchBar").addEventListener("input", function () {
-   // Call the search function on every input change
+    // Call the search function on every input change
 
     // Restart the interval if input is cleared
     if (this.value.trim() === "") {
@@ -1113,7 +1164,7 @@ document.getElementById("searchBar").addEventListener("input", function () {
 
         refresh_data(group_name);
 
-        interval_Id1 = setInterval(refresh_data, 60000); // Restart interval
+        // interval_Id1 = setInterval(refresh_data, 60000); // Restart interval
 
     }
 });

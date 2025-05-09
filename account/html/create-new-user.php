@@ -96,7 +96,7 @@
                         <label class="form-label" for="confirmpassword">Confirm Password</label>
                         <input type="password" class="form-control" id="confirmpassword" value="" placeholder="Enter Confirm Password...">
                     </div>
-                    <div id="passwordStrength" class="font-small text-danger-emphasis mt-2">Password must include: at least 8 characters, an uppercase letter, a lowercase letter, a number, a special character</div>
+                    <div id="passwordStrength" class="font-small text-danger-emphasis mt-2"style="display: none;">Password must include: at least 8 characters, an uppercase letter, a lowercase letter, a number, a special character</div>
                     <div id="passwordMismatch" class="font-small text-danger mt-2" style="display: none;"></div>
                 </form>
             </div>
